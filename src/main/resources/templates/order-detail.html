@@ -1,0 +1,133 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Getting Started: Serving Web Content</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <script th:src="@{/js/snaker/raphael-min.js}"></script>
+    <script th:src="@{/js/jquery-1.12.4.js}"></script>
+    <script th:src="@{/js/ajax.js}"></script>
+
+    <script th:src="@{/js/snaker/snaker.designer.js}"></script>
+    <script th:src="@{/js/snaker/snaker.model.js}"></script>
+    <script th:src="@{/js/snaker/snaker.editors.js}"></script>
+
+    <link th:href="@{/js/bootstrap-3.3.7-dist/css/bootstrap.css}" rel="stylesheet"/>
+    <link th:href="@{/css/snaker.css}" rel="stylesheet"/>
+    <script th:src="@{/js/bootstrap-3.3.7-dist/js/bootstrap.js}"></script>
+    <link rel="stylesheet" href="https://cdn.staticfile.org/foundation/5.5.3/css/foundation.min.css">
+    <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdn.staticfile.org/foundation/5.5.3/js/foundation.min.js"></script>
+    <script src="https://cdn.staticfile.org/foundation/5.5.3/js/vendor/modernizr.js"></script>
+</head>
+<body>
+<span th:include="basepath::html"></span>
+<div class="container">
+    <div class="row" style="max-width: 1200px">
+        <div class="col-md-offset-1 col-lg-10">
+            <div class="tab" role="tabpanel">
+                <!-- Nav tabs -->
+                <ul class="nav nav-tabs" role="tablist">
+                </ul>
+                <!-- Tab panes -->
+                <div class="tab-content tabs">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 模态框（Modal） -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"
+                        aria-hidden="true">×
+                </button>
+                <h4 class="modal-title" id="myModalLabel">
+                    启动流程
+                </h4>
+            </div>
+            <form class="form-horizontal">
+                <div class="form-group" style="padding-top: 5px">
+                    <label class="col-sm-2 control-label">empName</label>
+                    <div class="col-sm-8">
+                        <input type="text" name="name" class="form-control" id="name" placeholder="name">
+                        <span class="help-block"></span>
+                    </div>
+                </div>
+            </form>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default"
+                        data-dismiss="modal">关闭
+                </button>
+                <button type="button" class="btn btn-primary" id="startConfirm">
+                    确认启动
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    var processId = [[${processId}]];
+    var orderId = [[${orderId}]];
+    var taskId = [[${taskId}]];
+    var taskName = [[${tasks[0].taskName}]];
+
+    $.ajax({
+        type: 'GET',
+        url: getBaseUrl() + "/snaker/flow/node",
+        data: "processId=" + processId,
+        async: false,
+        globle: false,
+        error: function () {
+            alert('数据处理错误！');
+            return false;
+        },
+        success: function (data) {
+            var curTab;
+            var iscurrent = false;
+            var nodenames = "";
+            console.log(data);
+            var tabs_html = "";
+            var tabs_content = "";
+
+            for (var i = 0; i < data.length; i++) {
+                var node = data[i];
+                if(node.name == taskName){
+                    tabs_html +='<li role="presentation" class="active"><a href="#Section'+i+'" aria-controls="home" role="tab" data-toggle="tab">' +node.displayName + '</a></li>';
+                    tabs_content +='<div role="tabpanel" class="tab-pane fade in active" id="Section'+i+'">\n' +
+                        '                        <h3>' + node.displayName+ '</h3>\n' +
+                        '                    </div>'
+                }
+                else {
+                    tabs_html += '<li role="presentation"><a href="#Section' + i+'" aria-controls="profile" role="tab" data-toggle="tab">' + node.displayName+ '</a></li>';
+                    tabs_content +=' <div role="tabpanel" class="tab-pane fade" id="Section' + i+'">\n' +
+                        '                        <h3>' +node.displayName + '</h3>\n' +
+                        '                    </div>';
+                }
+            }
+            $(".nav-tabs").append(tabs_html);
+            $(".tab-content").append(tabs_content);
+
+        }
+    });
+    $.ajax({
+        type: 'GET',
+        url: getBaseUrl() + "/business/detail?taskId=" + taskId,
+        async: false,
+        globle: false,
+        dataType:"json",
+        error: function () {
+            return false;
+        },
+        success: function (data) {
+            var
+           console.log(data);
+
+        }
+    });
+
+</script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+server:
+  port: 3345
+spring:
+  datasource:
+    name: mydb
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.jdbc.Driver
+    minIdle: 100
+    maxActive: 200
+    initialSize: 1
+    timeBetweenEvictionRunsMillis: 60000
+    minEvictableIdleTimeMillis: 300000
+    validationQuery: SELECT 'ZTM' FROM DUAL
+    testWhileIdle: true
+    testOnBorrow: false
+    testOnReturn: false
+    maxOpenPreparedStatements: 20
+    removeAbandoned: true
+    removeAbandonedTimeout: 1800
+    url: jdbc:mysql://localhost:3306/snaker?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=UTF-8&useSSL=false
+    username: root
+    password: root
+  activemq:
+    broker-url: tcp://192.168.8.85:61616
+    pool:
+      enabled: true
+      max-connections: 50
+    packages:
+      trust-all: true
+  thymeleaf:
+    cache: false
+  main:
+    allow-bean-definition-overriding: true
+
+logging:
+  config: classpath:logback.xml
+mybatis:
+  mapperLocations: classpath*:dao/**/*.xml
