@@ -72,6 +72,29 @@ public class TransitionModel extends BaseModel implements Action {
 			target.execute(execution);
 		}
 	}
+
+	/**
+	 * 获取下一个节点的类型
+	 * @return
+	 */
+	public Integer getNodeType(){
+//		if(!enabled) return 0;
+		if(target instanceof TaskModel) {
+			//如果目标节点模型为TaskModel，则创建task
+			return  1;
+		}else if(target instanceof DecisionModel) {
+			//如果目标节点模型为TaskModel，则创建task
+			return  2;
+		}else if(target instanceof EndModel) {
+			//如果目标节点模型为TaskModel，则创建task
+			return  3;
+		}else if(target instanceof StartModel) {
+			//如果目标节点模型为TaskModel，则创建task
+			return  4;
+		}else {
+			return -1;
+		}
+	}
 	
 	public NodeModel getSource() {
 		return source;

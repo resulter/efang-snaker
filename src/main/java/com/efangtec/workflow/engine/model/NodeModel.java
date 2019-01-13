@@ -22,6 +22,7 @@ import com.efangtec.workflow.engine.helper.ClassHelper;
 import com.efangtec.workflow.engine.helper.StringHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.ObjectUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -138,6 +139,24 @@ public abstract class NodeModel extends com.efangtec.workflow.engine.model.BaseM
 			result = result || canRejected(source, parent);
 		}
 		return result;
+	}
+
+	/**
+	 * * 获取节点的类型
+	 * TaskModel == 1;
+	 * DecisionModel == 2;
+	 * @param current
+	 * @return
+	 */
+	public static Integer getNodeType(NodeModel current){
+		if(ObjectUtils.isEmpty(current)) return 0;
+		if(current instanceof TaskModel) {
+			return  1;
+		}else if(current instanceof DecisionModel) {
+			return  2;
+		}else {
+			return -1;
+		}
 	}
 
     public <T> List<T> getNextModels(Class<T> clazz) {

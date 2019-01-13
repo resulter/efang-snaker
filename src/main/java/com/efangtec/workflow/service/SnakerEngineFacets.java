@@ -44,13 +44,13 @@ public class SnakerEngineFacets {
 		StringBuffer sb = new StringBuffer();
 //		InputStream streamFromClasspath = StreamHelper.getStreamFromClasspath("flows/anjing.snaker");
 //    	return	engine.process().deploy(streamFromClasspath);
-        sb.append(engine.process().deploy(StreamHelper.getStreamFromClasspath("flows/anjing.snaker")));
-        sb.append(",");
-        sb.append(engine.process().deploy(StreamHelper.getStreamFromClasspath("flows/efangtec_qilu.snaker")));
-		sb.append(",");
-		sb.append(engine.process().deploy(StreamHelper.getStreamFromClasspath("flows/follow.snaker")));
-		sb.append(",");
-		sb.append(engine.process().deploy(StreamHelper.getStreamFromClasspath("flows/process.snaker")));
+//        sb.append(engine.process().deploy(StreamHelper.getStreamFromClasspath("flows/anjing.snaker")));
+//        sb.append(",");
+//        sb.append(engine.process().deploy(StreamHelper.getStreamFromClasspath("flows/efangtec_qilu.snaker")));
+//		sb.append(",");
+//		sb.append(engine.process().deploy(StreamHelper.getStreamFromClasspath("flows/follow.snaker")));
+//		sb.append(",");
+		sb.append(engine.process().deploy(StreamHelper.getStreamFromClasspath("flows/niubi.snaker")));
 		return sb.toString();
 	}
 	

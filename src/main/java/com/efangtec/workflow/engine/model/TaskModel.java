@@ -24,6 +24,7 @@ import com.efangtec.workflow.engine.scheduling.JobCallback;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 任务定义task元素
@@ -253,4 +254,45 @@ public class TaskModel extends com.efangtec.workflow.engine.model.WorkModel {
         }
         return models;
     }
+
+	/**
+	 *节点类型：
+	 * 	1 = 普通task
+	 * 	2 = 下一个任务将进行决策
+	 */
+    private Integer nodeType;
+
+	public Integer getNodeType() {
+		return nodeType;
+	}
+
+	public void setNodeType(Integer nodeType) {
+		this.nodeType = nodeType;
+	}
+
+	/**
+	 * 操作-结果节点
+	 */
+	private List<Map<String,String>> operation;
+
+	public List<Map<String, String>> getOperation() {
+		return operation;
+	}
+
+	public void setOperation(List<Map<String, String>> operation) {
+		this.operation = operation;
+	}
+
+	/**
+	 * 决策表达式
+	 */
+	private String expr;
+
+	public String getExpr() {
+		return expr;
+	}
+
+	public void setExpr(String expr) {
+		this.expr = expr;
+	}
 }

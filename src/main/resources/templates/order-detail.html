@@ -15,7 +15,7 @@
     <link th:href="@{/css/snaker.css}" rel="stylesheet"/>
     <script th:src="@{/js/bootstrap-3.3.7-dist/js/bootstrap.js}"></script>
     <link rel="stylesheet" href="https://cdn.staticfile.org/foundation/5.5.3/css/foundation.min.css">
-    <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+    <!--<script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>-->
     <script src="https://cdn.staticfile.org/foundation/5.5.3/js/foundation.min.js"></script>
     <script src="https://cdn.staticfile.org/foundation/5.5.3/js/vendor/modernizr.js"></script>
 </head>
@@ -30,7 +30,11 @@
                 </ul>
                 <!-- Tab panes -->
                 <div class="tab-content tabs">
+                    <div class="content">
+                    </div>
                 </div>
+
+
             </div>
         </div>
     </div>
@@ -68,11 +72,13 @@
     </div>
 </div>
 
+
 <script th:inline="javascript">
     var processId = [[${processId}]];
     var orderId = [[${orderId}]];
     var taskId = [[${taskId}]];
-    var taskName = [[${tasks[0].taskName}]];
+    var taskName = [[${taskName}]];
+    var operator = "操作者";
 
     $.ajax({
         type: 'GET',
@@ -85,48 +91,139 @@
             return false;
         },
         success: function (data) {
+            var html = "";
             var curTab;
             var iscurrent = false;
             var nodenames = "";
             console.log(data);
             var tabs_html = "";
             var tabs_content = "";
-
             for (var i = 0; i < data.length; i++) {
                 var node = data[i];
-                if(node.name == taskName){
-                    tabs_html +='<li role="presentation" class="active"><a href="#Section'+i+'" aria-controls="home" role="tab" data-toggle="tab">' +node.displayName + '</a></li>';
-                    tabs_content +='<div role="tabpanel" class="tab-pane fade in active" id="Section'+i+'">\n' +
-                        '                        <h3>' + node.displayName+ '</h3>\n' +
-                        '                    </div>'
+                if (node.nodeType == 1||node.nodeType == 3) {
+                    html = initTask(i);
+                } else if (node.nodeType == 2) {
+                    var ep = node.expr.substr(2,node.expr.length-3);
+                    html = initDecision(node,i,ep);
+                }
+                if (node.name == taskName) {
+                    tabs_html += '<li role="presentation" class="active"><a href="#Section' + i + '" aria-controls="home" role="tab" data-toggle="tab">' + node.displayName + '</a></li>';
+                    tabs_content += '<div role="tabpanel" class="tab-pane fade in active click_evt" id="Section' + i + '">\n' +
+                        '                        <h3>' + node.displayName + '</h3>\n';
+                    tabs_content += html;
+
                 }
                 else {
-                    tabs_html += '<li role="presentation"><a href="#Section' + i+'" aria-controls="profile" role="tab" data-toggle="tab">' + node.displayName+ '</a></li>';
-                    tabs_content +=' <div role="tabpanel" class="tab-pane fade" id="Section' + i+'">\n' +
-                        '                        <h3>' +node.displayName + '</h3>\n' +
-                        '                    </div>';
+                    tabs_html += '<li role="presentation"><a href="#Section' + i + '" aria-controls="profile" role="tab" data-toggle="tab">' + node.displayName + '</a></li>';
+                    tabs_content += ' <div role="tabpanel" class="tab-pane fade click_evt" id="Section' + i + '">\n' +
+                        '                        <h3>' + node.displayName + '</h3>\n';
+                    tabs_content += html;
                 }
+                tabs_content += '<button type="button" class="btn btn-primary" id="confirm' + i+'">\n' +
+                    '                    确认\n' +
+                    '                </button></div>';
+                initClick(i,node.nodeType,node.expr);
             }
             $(".nav-tabs").append(tabs_html);
             $(".tab-content").append(tabs_content);
 
-        }
-    });
-    $.ajax({
-        type: 'GET',
-        url: getBaseUrl() + "/business/detail?taskId=" + taskId,
-        async: false,
-        globle: false,
-        dataType:"json",
-        error: function () {
-            return false;
-        },
-        success: function (data) {
-            var
-           console.log(data);
 
         }
     });
+
+    function initTask(i) {
+        var result = "";
+       /* $.ajax({
+            type: 'GET',
+            url: getBaseUrl() + "/business/detail?taskId=" + taskId,
+            async: false,
+            globle: false,
+            dataType: "json",
+            error: function () {
+                return false;
+            },
+            success: function (data) {
+                var data_html = '<h5>msg: ' + data.msg + '</h5></<br><h5>name: ' + data.name + '</h5>';
+                // $(".tab-content").html("");
+                // $(".tab-content").append(data_html);
+
+            }
+        });*/
+        result += '<form class="form-horizontal" id="form' + i+ '">\n' +
+            '                <div class="form-group" style="padding-top: 5px">\n' +
+            '                    <label class="col-sm-2 control-label">审核</label>\n' +
+            '                    <div class="col-sm-8">\n' +
+            '                        <input type="text" name="name" class="form-control" id="name2" placeholder="name">\n' +
+            '                        <span class="help-block"></span>\n' +
+            '                    </div>\n' +
+            '                </div>\n' +
+            '            </form>';
+        // result = data_html;
+        return result;
+    }
+
+    function initDecision(data,i,expr) {
+        // alert(expr);
+        var operation = data.operation;
+        var html = "";
+        html += '<form class="form-horizontal" id="form' + i+ '">\n' +
+            '                <div class="form-group" style="padding-top: 5px">\n' +
+            '                    <label class="col-sm-2 control-label">审核</label>\n' +
+            '                    <div class="col-sm-8">\n' +
+            '                        <input type="text" name="name" class="form-control" id="name2" placeholder="name">\n' +
+            '                        <span class="help-block"></span>\n' +
+            '                    </div>\n' +
+            '                </div>\n' +
+            '                <div class="form-group">\n' +
+            '                    <label class="col-sm-2 control-label">审核操作</label>\n' +
+            '                    <div class="col-sm-8">\n';
+
+        for (var i = 0; i < operation.length; i++) {
+            var a = operation[i].path;
+            var b = operation[i].pathDisplay;
+            var c = operation[i].to;
+            $(".content").html("");
+            var radio_html = '<label class="radio-inline">\n' +
+                '                            <input type="radio" data-id="' + a + '" name="opt" id="inlineRadio' + i + '" value="' + a + '"> ' + b + '\n' +
+                '                        </label>\n';
+            html += radio_html;
+        }
+        html += '</div>\n' +
+            '                </div>\n' +
+            '                <input name="expr" type="hidden" id="expr" value="' +expr +'">' +
+            '            </form>';
+        return html;
+    }
+    function initClick(i,nodeType){
+        $(".tab-content").on("click","div #confirm" + i,function () {
+            // if(nodeType == 2) {
+                doSth(i);
+            // }
+
+        });
+    }
+    function doSth(i) {
+        $.ajax({
+            type: 'POST',
+            url: getBaseUrl() + "/business/opt",
+            async: false,
+            data: $.param({'taskId':taskId,'processId':processId,'orderId':orderId})+'&'+$("#form"+i).serialize(),
+            globle: false,
+            dataType: "json",
+            error: function () {
+                return false;
+            },
+            success: function (data) {
+                console.log("aaaaa " + data.id);
+                if(data.code == 200) {
+                    window.location.href = getBaseUrl() + "/toOrderDetail?processId=" + processId + "&orderId=" + orderId + "&taskId=" + data.id;
+                }else {
+                    window.location.href = getBaseUrl() + "/toActive";
+
+                }
+            }
+        });
+    }
 
 </script>
 </body>
