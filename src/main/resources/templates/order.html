@@ -1,0 +1,106 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Getting Started: Serving Web Content</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <script th:src="@{/js/jquery-1.12.4.js}"></script>
+    <script th:src="@{/js/ajax.js}"></script>
+    <link th:href="@{/js/bootstrap-3.3.7-dist/css/bootstrap.css}" rel="stylesheet"/>
+    <script th:src="@{/js/bootstrap-3.3.7-dist/js/bootstrap.js}"></script>
+
+</head>
+<body>
+<span th:include="basepath::html"></span>
+<div class="row" style="padding-top: 50px">
+    <div class="col-md-2"></div>
+    <div class="col-md-8">
+        <table class="table">
+            <tr>
+                <th>流程名称</th>
+                <th>实例编号</th>
+                <th>实例启动时间</th>
+                <th>实例结束时间</th>
+                <th>期望完成时间</th>
+                <th>实例创建人</th>
+                <th>实例状态</th>
+                <th>操作</th>
+            </tr>
+            <tr th:each="order,infoStat : ${page.result}">
+                <td th:text="${order.processName}"></td>
+                <td th:text="${order.orderNo}"></td>
+                <th th:text="${order.createTime}"></th>
+                <th th:text="${order.endTime}"></th>
+                <th th:text="${order.expireTime}"></th>
+                <th th:text="${order.creator}"></th>
+                <th th:text="${order.orderState == 1 ? '已结束' : '运行中'}"></th>
+                <th>
+                    <a href="#editModal" th:onclick="start(1)">启动流程</a>
+                </th>
+            </tr>
+        </table>
+    </div>
+    <div class="col-md-2"></div>
+</div>
+<!-- 模态框（Modal） -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"
+                        aria-hidden="true">×
+                </button>
+                <h4 class="modal-title" id="myModalLabel">
+                    启动流程
+                </h4>
+            </div>
+            <form class="form-horizontal">
+                <div class="form-group" style="padding-top: 5px">
+                    <label class="col-sm-2 control-label">empName</label>
+                    <div class="col-sm-8">
+                        <input type="text" name="name" class="form-control" id="name" placeholder="name">
+                        <span class="help-block"></span>
+                    </div>
+                </div>
+            </form>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default"
+                        data-dismiss="modal">关闭
+                </button>
+                <button type="button" class="btn btn-primary" id="startConfirm">
+                    确认启动
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    /*$(function () {
+        alert("page load finish.");
+    });*/
+
+    function start(process_id) {
+        $('#myModal').modal('show');
+        $("#startConfirm").attr("processId",process_id);
+        // confirm(process_id)
+    }
+
+    $("#startConfirm").on("click",function () {
+       var processId =  $("#startConfirm").attr("processId");
+       var name = $("#name").val();
+       alert(processId + "   :  "+ name);
+        jQuery.ax(getBaseUrl() + "/startProcess", {
+            processId: processId,
+            name: name,
+            operator: "operator"
+        }, false, 'POST', 'text', function (res) {
+            $('#myModal').modal('hide');
+            alert("启动成功");
+        }, function (res) {
+            $('#myModal').modal('hide');
+            alert("启动失败");
+        })
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ApplyMapper">
+    <resultMap id="processMap" type="com.efangtec.workflow.engine.entity.Process">
+        <result column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="display_Name" property="displayName"/>
+        <result column="type" property="type"/>
+        <result column="instance_Url" property="instanceUrl"/>
+        <result column="state" property="state"/>
+        <!--<result column="content" property="content"/>-->
+        <result column="version" property="version"/>
+        <result column="create_Time" property="createTime"/>
+        <result column="creator" property="creator"/>
+    </resultMap>
+    <insert id="insertWithOrder">
+      INSERT INTO ap_one (`name`, `order_id`) VALUES (#{name}, #{orderId});
+    </insert>
+    <select id="selectProcess" resultMap="processMap">
+        SELECT * FROM `wf_process` where id = #{id};
+    </select>
+    <insert id="insertTwo">
+        INSERT INTO `ap_two` (`name`, `order_id`, `task_id`, `msg`) VALUES (#{name},#{orderId},#{taskId},#{msg});
+    </insert>
+
+</mapper>

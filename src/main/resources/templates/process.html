@@ -1,0 +1,119 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Getting Started: Serving Web Content</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <script th:src="@{/js/jquery-1.12.4.js}"></script>
+    <script th:src="@{/js/ajax.js}"></script>
+    <link th:href="@{/js/bootstrap-3.3.7-dist/css/bootstrap.css}" rel="stylesheet"/>
+    <script th:src="@{/js/bootstrap-3.3.7-dist/js/bootstrap.js}"></script>
+    <script th:src="@{/js/common.js}"></script>
+
+</head>
+<body>
+<span th:include="basepath::html"></span>
+<div class="row" style="padding-top: 50px">
+    <div class="col-md-2"></div>
+    <div class="col-md-8">
+        <table class="table">
+            <tr>
+                <th>名称</th>
+                <th>流程显示名称</th>
+                <th>版本号</th>
+                <th>状态</th>
+                <th>操作</th>
+            </tr>
+            <tr th:each="process,infoStat : ${page.result}">
+                <td th:text="${process.name}"></td>
+                <td th:text="${process.displayName}"></td>
+                <th th:text="${process.version}"></th>
+                <th th:text="${process.state == 1 ? '启用' : '禁用'}"></th>
+                <th>
+                    <a href="#editModal" th:onclick="start([[${process.id}]]);">启动流程</a>
+                </th>
+            </tr>
+        </table>
+    </div>
+    <div class="col-md-2"></div>
+
+
+</div>
+<!--<div th:include="readme.html :: test1" width="100%" height="355px" frameborder="no" border="0"></div>-->
+
+<!-- 模态框（Modal） -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"
+                        aria-hidden="true">×
+                </button>
+                <h4 class="modal-title" id="myModalLabel">
+                    启动流程
+                </h4>
+            </div>
+            <form class="form-horizontal" id="form">
+                <div id="loadContent" style="display: none"></div>
+            </form>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default"
+                        data-dismiss="modal">关闭
+                </button>
+                <button type="button" class="btn btn-primary" id="startConfirm">
+                    确认启动
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    var operator = "操作者";
+
+    /*$(function () {
+        alert("page load finish.");
+    });*/
+
+    function start(process_id) {
+        $('#myModal').modal('show');
+
+        $("#startConfirm").attr("processId",process_id);
+        jQuery.ax(getBaseUrl() + "/snaker/flow/node",{processId:process_id,orderId:""},true,"get","json",function (data) {
+            var node = data[0];
+            $("#loadContent").load(node.form + ".html .form-group", "", function () {
+                $(".form-horizontal").append($("#loadContent" ).children());
+            });
+
+        },function (res) {
+
+        });
+        // confirm(process_id)
+    }
+
+    $("#startConfirm").on("click",function () {
+       var processId =  $("#startConfirm").attr("processId");
+       // alert(processId + "   :  "+ name);
+        var sd = '"processId":"' + processId + '","operator":"' + operator + '"';
+        var paramMap = '{"paramMap":' + JSON.stringify(getFormData($("#form").serializeArray(), getArray(sd))) + '}';
+        // console.log("******* " + JSON.stringify(getFormData($("#form" + i).serializeArray(), getArray(sd))));
+        $.ajax({
+            type: 'POST',
+            url: getBaseUrl() + "/startProcess",
+            async: false,
+            data: paramMap,
+            dataType: "text",
+            contentType: 'application/json; charset=UTF-8',
+            success: function (data) {
+                alert("启动成功");
+                $('#myModal').modal('hide');
+            },
+            error: function () {
+                alert("启动失败");
+                $('#myModal').modal('hide');
+            }
+
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,144 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Getting Started: Serving Web Content</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <script th:src="@{/js/snaker/raphael-min.js}"></script>
+    <script th:src="@{/js/jquery-1.12.4.js}"></script>
+    <script th:src="@{/js/ajax.js}"></script>
+
+    <script th:src="@{/js/snaker/snaker.designer.js}"></script>
+    <script th:src="@{/js/snaker/snaker.model.js}"></script>
+    <script th:src="@{/js/snaker/snaker.editors.js}"></script>
+
+    <link th:href="@{/js/bootstrap-3.3.7-dist/css/bootstrap.css}" rel="stylesheet"/>
+    <link th:href="@{/css/snaker.css}" rel="stylesheet"/>
+    <script th:src="@{/js/bootstrap-3.3.7-dist/js/bootstrap.js}"></script>
+
+</head>
+<script>
+    function display(process, state,orderId) {
+        /** view*/
+        $('#snakerflow').snakerflow($.extend(true,{
+                basePath : getBaseUrl() +"/js/snaker/",
+                ctxPath : getBaseUrl(),
+                orderId : orderId,
+                restore : eval("(" + process + ")"),
+                editable : false
+            },eval("(" + state + ")")
+        ));
+    }
+</script>
+<body>
+<span th:include="basepath::html"></span>
+<div class="row" style="padding-top: 50px">
+    <div class="col-md-2"></div>
+    <div class="col-md-8">
+        <table class="table">
+            <tr>
+                <th>任务名称</th>
+                <th>任务创建时间</th>
+                <th>任务完成时间</th>
+                <th>任务处理人</th>
+            </tr>
+            <tr th:each="task,infoStat : ${tasks}">
+                <td th:text="${task.displayName}"></td>
+                <td th:text="${task.createTime}"></td>
+                <th th:text="${task.finishTime}"></th>
+                <th th:text="${task.operator}"></th>
+            </tr>
+        </table>
+    </div>
+    <div class="col-md-2"></div>
+</div>
+<table class="properties_all" align="center" border="1" cellpadding="0" cellspacing="0" style="margin-top: 0px;display: none">
+    <div id="snakerflow" style="border: 1px solid #d2dde2; margin-top:10px; margin-left:10px; width:98%;display: none;">
+    </div>
+</table>
+<!-- 模态框（Modal） -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"
+                        aria-hidden="true">×
+                </button>
+                <h4 class="modal-title" id="myModalLabel">
+                    启动流程
+                </h4>
+            </div>
+            <form class="form-horizontal">
+                <div class="form-group" style="padding-top: 5px">
+                    <label class="col-sm-2 control-label">empName</label>
+                    <div class="col-sm-8">
+                        <input type="text" name="name" class="form-control" id="name" placeholder="name">
+                        <span class="help-block"></span>
+                    </div>
+                </div>
+            </form>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default"
+                        data-dismiss="modal">关闭
+                </button>
+                <button type="button" class="btn btn-primary" id="startConfirm">
+                    确认启动
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    var processId = [[${processId}]];
+    var orderId = [[${order.id}]];
+    /*$(function () {
+        alert("page load finish.");
+    });*/
+
+    function start(process_id) {
+        $('#myModal').modal('show');
+        $("#startConfirm").attr("processId",process_id);
+        // confirm(process_id)
+    }
+
+    $("#startConfirm").on("click",function () {
+       var processId =  $("#startConfirm").attr("processId");
+       var name = $("#name").val();
+       alert(processId + "   :  "+ name);
+        jQuery.ax(getBaseUrl() + "/startProcess", {
+            processId: processId,
+            name: name,
+            operator: "operator"
+        }, false, 'POST', 'text', function (res) {
+            $('#myModal').modal('hide');
+            alert("启动成功");
+        }, function (res) {
+            $('#myModal').modal('hide');
+            alert("启动失败");
+        })
+    });
+
+    $.ajax({
+        type:'GET',
+        url:getBaseUrl()+"/process/static/json",
+        data:"processId=" + processId+"&orderId="+orderId,
+        async: false,
+        globle:false,
+        error: function(){
+            alert('数据处理错误！');
+            return false;
+        },
+        success: function(data){
+            display(data.process, data.state,orderId);
+        }
+    });
+   /* jQuery.ax(getBaseUrl() + "/process/static/json",{processId: processId,orderId: orderId},false,"get","",function (res) {
+        display(res.process, res.state);
+        // console.log(res);
+    },function (res) {
+        console.log(res);
+    })*/
+
+</script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<config>
+<!--	<bean name="task" class="com.efangtec.workflow.framework.flow.ext.ExtTaskParser"/>-->
+	<bean class="com.efangtec.workflow.engine.access.dialect.MySqlDialect"/>
+	<bean class="com.efangtec.workflow.engine.impl.LogInterceptor"/>
+	<!--<bean class="com.efangtec.workflow.engine.spring.SpelExpression"/>-->
+	<bean class="com.efangtec.workflow.engine.impl.JuelExpression"/>
+	<bean class="com.efangtec.workflow.framework.flow.CustomAccessStrategy"/>
+	<bean class="com.efangtec.workflow.engine.impl.SchedulerInterceptor"/>
+
+	<bean class="com.efangtec.workflow.engine.scheduling.quartz.QuartzScheduler"/>
+</config>
