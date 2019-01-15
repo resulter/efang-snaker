@@ -295,4 +295,17 @@ public class TaskModel extends com.efangtec.workflow.engine.model.WorkModel {
 	public void setExpr(String expr) {
 		this.expr = expr;
 	}
+
+	/**
+	 * 业务数据
+	 */
+	private Map<String,Object> business;
+
+	public Map<String, Object> getBusiness() {
+		return business;
+	}
+
+	public void setBusiness(Map<String, Object> business) {
+		this.business = business;
+	}
 }

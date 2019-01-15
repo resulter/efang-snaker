@@ -24,7 +24,7 @@ $(function() {
 				'Authorization': 'Bearer ' + localStorage.getItem("token")
 			},*/
 			url: url,
-			 dataType: "text",
+			 dataType: dataType,
 			success: function(d) {
 				successfn(d);
 			},

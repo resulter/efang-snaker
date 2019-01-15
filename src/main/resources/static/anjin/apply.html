@@ -1,0 +1,75 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <title>jQuery之家</title>
+    <style type="text/css">
+        body {
+            font-size: 14px;
+        }
+
+        .content {
+            width: 800px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+<div th:fragment="test1">
+    <div class="form_group">
+        <h3>患者申请</h3>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-2 control-label">Email</label>
+        <div class="col-sm-10">
+            <p class="form-control-static">患者申请</p>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-2 control-label">姓名</label>
+        <div class="col-sm-10">
+            <input type="text" name="name" class="form-control" id="name"
+                   placeholder="张三">
+            <span class="help-block"></span>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-2 control-label">年龄</label>
+        <div class="col-sm-10">
+            <input type="text" name="age" class="form-control" id="age"
+                   placeholder="1">
+            <span class="help-block"></span>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-2 control-label">邮箱</label>
+        <div class="col-sm-10">
+            <input type="text" name="email" class="form-control" id="email_add_input"
+                   placeholder="email@126.com">
+            <span class="help-block"></span>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-2 control-label">性别</label>
+        <div class="col-sm-10">
+            <label class="radio-inline">
+                <input type="radio" name="gender" id="gender1_add_input_1" value="M" checked="checked"> 男
+            </label>
+            <label class="radio-inline">
+                <input type="radio" name="gender" id="gender1_add_input_12" value="F"> 女
+            </label>
+        </div>
+    </div>
+</div>
+<div>
+    <h1>ASsSasdadaa</h1>
+    <h1>ASsSasdadaa</h1>
+    <h1>ASsSasdadaa</h1>
+</div>
+</body>
+</html>

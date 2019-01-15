@@ -1,8 +1,11 @@
 package com.efangtec.workflow.conroller;
 
+import com.efangtec.project.entity.Two;
+import com.efangtec.workflow.engine.DBAccess;
 import com.efangtec.workflow.engine.access.Page;
 import com.efangtec.workflow.engine.access.QueryFilter;
 import com.efangtec.workflow.engine.entity.HistoryOrder;
+import com.efangtec.workflow.engine.entity.HistoryTask;
 import com.efangtec.workflow.engine.entity.Process;
 import com.efangtec.workflow.engine.model.*;
 import com.efangtec.workflow.service.SnakerEngineFacets;
@@ -10,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -34,6 +38,8 @@ public class FlowController {
     public static final String PARA_CCOPERATOR = "ccOperator";
     @Autowired
     private SnakerEngineFacets facets;
+    @Autowired
+    DBAccess access;
     /**
      * 流程实例查询
      * @param model
@@ -55,7 +61,10 @@ public class FlowController {
      */
     @RequestMapping(value = "node")
     @ResponseBody
-    public Object node(String processId) {
+    public Object node(String processId,String orderId) {
+
+
+
         Process process = facets.getEngine().process().getProcessById(processId);
         ProcessModel processModel = process.getModel();
         List<TaskModel> models = process.getModel().getModels(TaskModel.class);
@@ -94,6 +103,22 @@ public class FlowController {
             }
             viewModel.setExpr(expr);
             viewModel.setOperation(operation);
+            Map<String,Object> business = new HashMap<>();
+            if(!StringUtils.isEmpty(orderId)) {
+                List<HistoryTask> historyTasks = facets.getEngine().query().getHistoryTasks(new QueryFilter().setOrderId(orderId));
+                for (int i = 0; i < historyTasks.size(); i++) {
+                    if (historyTasks.get(i).getTaskName().equals(model.getName())) {
+                        String taskId = historyTasks.get(i).getId();
+                        Two two = access.queryObject(Two.class, "select * from ap_two where task_id = ?", new Object[]{taskId});
+                        if (ObjectUtils.isEmpty(two)) {
+
+                        } else {
+                            business.put("name", two.getName());
+                        }
+                    }
+                }
+                viewModel.setBusiness(business);
+            }
             viewModels.add(viewModel);
         }
         return viewModels;

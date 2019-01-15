@@ -50,7 +50,7 @@ public class SnakerEngineFacets {
 //		sb.append(",");
 //		sb.append(engine.process().deploy(StreamHelper.getStreamFromClasspath("flows/follow.snaker")));
 //		sb.append(",");
-		sb.append(engine.process().deploy(StreamHelper.getStreamFromClasspath("flows/niubi.snaker")));
+		sb.append(engine.process().deploy(StreamHelper.getStreamFromClasspath("flows/form.snaker")));
 		return sb.toString();
 	}
 	

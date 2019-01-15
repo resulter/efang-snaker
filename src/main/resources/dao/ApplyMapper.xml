@@ -18,6 +18,8 @@
     <select id="selectProcess" resultMap="processMap">
         SELECT * FROM `wf_process` where id = #{id};
     </select>
-
+    <insert id="insertTwo">
+        INSERT INTO `ap_two` (`name`, `order_id`, `task_id`, `msg`) VALUES (#{name},#{orderId},#{taskId},#{msg});
+    </insert>
 
 </mapper>

@@ -7,6 +7,7 @@
     <script th:src="@{/js/ajax.js}"></script>
     <link th:href="@{/js/bootstrap-3.3.7-dist/css/bootstrap.css}" rel="stylesheet"/>
     <script th:src="@{/js/bootstrap-3.3.7-dist/js/bootstrap.js}"></script>
+    <script th:src="@{/js/common.js}"></script>
 
 </head>
 <body>
@@ -34,7 +35,11 @@
         </table>
     </div>
     <div class="col-md-2"></div>
+
+
 </div>
+<!--<div th:include="readme.html :: test1" width="100%" height="355px" frameborder="no" border="0"></div>-->
+
 <!-- 模态框（Modal） -->
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -47,21 +52,8 @@
                     启动流程
                 </h4>
             </div>
-            <form class="form-horizontal">
-                <div class="form-group" style="padding-top: 5px">
-                    <label class="col-sm-2 control-label">姓名</label>
-                    <div class="col-sm-8">
-                        <input type="text" name="name" class="form-control" id="name" placeholder="name">
-                        <span class="help-block"></span>
-                    </div>
-                </div>
-                <div class="form-group" style="padding-top: 5px">
-                    <label class="col-sm-2 control-label">内容</label>
-                    <div class="col-sm-8">
-                        <input type="text" name="msg" class="form-control" id="msg" placeholder="msg">
-                        <span class="help-block"></span>
-                    </div>
-                </div>
+            <form class="form-horizontal" id="form">
+                <div id="loadContent" style="display: none"></div>
             </form>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default"
@@ -75,34 +67,52 @@
     </div>
 </div>
 
-<script>
+<script th:inline="javascript">
+    var operator = "操作者";
+
     /*$(function () {
         alert("page load finish.");
     });*/
 
     function start(process_id) {
         $('#myModal').modal('show');
+
         $("#startConfirm").attr("processId",process_id);
+        jQuery.ax(getBaseUrl() + "/snaker/flow/node",{processId:process_id,orderId:""},true,"get","json",function (data) {
+            var node = data[0];
+            $("#loadContent").load(node.form + ".html .form-group", "", function () {
+                $(".form-horizontal").append($("#loadContent" ).children());
+            });
+
+        },function (res) {
+
+        });
         // confirm(process_id)
     }
 
     $("#startConfirm").on("click",function () {
        var processId =  $("#startConfirm").attr("processId");
-       var name = $("#name").val();
-       var msg = $("#msg").val();
-       alert(processId + "   :  "+ name);
-        jQuery.ax(getBaseUrl() + "/startProcess", {
-            processId: processId,
-            name: name,
-            msg: msg,
-            operator: "operator"
-        }, false, 'POST', '', function (res) {
-            $('#myModal').modal('hide');
-            alert("启动成功");
-        }, function (res) {
-            $('#myModal').modal('hide');
-            alert("启动失败");
-        })
+       // alert(processId + "   :  "+ name);
+        var sd = '"processId":"' + processId + '","operator":"' + operator + '"';
+        var paramMap = '{"paramMap":' + JSON.stringify(getFormData($("#form").serializeArray(), getArray(sd))) + '}';
+        // console.log("******* " + JSON.stringify(getFormData($("#form" + i).serializeArray(), getArray(sd))));
+        $.ajax({
+            type: 'POST',
+            url: getBaseUrl() + "/startProcess",
+            async: false,
+            data: paramMap,
+            dataType: "text",
+            contentType: 'application/json; charset=UTF-8',
+            success: function (data) {
+                alert("启动成功");
+                $('#myModal').modal('hide');
+            },
+            error: function () {
+                alert("启动失败");
+                $('#myModal').modal('hide');
+            }
+
+        });
     });
 </script>
 </body>

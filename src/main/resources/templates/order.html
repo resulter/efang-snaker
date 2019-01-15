@@ -93,7 +93,7 @@
             processId: processId,
             name: name,
             operator: "operator"
-        }, false, 'POST', '', function (res) {
+        }, false, 'POST', 'text', function (res) {
             $('#myModal').modal('hide');
             alert("启动成功");
         }, function (res) {

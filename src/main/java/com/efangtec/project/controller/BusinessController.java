@@ -2,17 +2,18 @@ package com.efangtec.project.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.efangtec.project.entity.BaseParam;
 import com.efangtec.project.entity.One;
+import com.efangtec.project.entity.Two;
 import com.efangtec.workflow.engine.DBAccess;
 import com.efangtec.workflow.engine.access.QueryFilter;
 import com.efangtec.workflow.engine.entity.Task;
 import com.efangtec.workflow.service.SnakerEngineFacets;
 import org.apache.commons.lang.StringUtils;
+import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -25,6 +26,8 @@ public class BusinessController {
     DBAccess access;
     @Autowired
     private SnakerEngineFacets facets;
+    @Autowired
+    SqlSessionTemplate sqlSessionTemplate;
 
     @RequestMapping(value = "/detail")
     public JSONObject getbusinessDate(String taskId) {
@@ -55,6 +58,18 @@ public class BusinessController {
             jsonObject.put("code",200);
             jsonObject.put("id", task.getId());
         }
+        Map<String,Object> p = new HashMap<>();
+        p.put("orderId",orderId);
+        p.put("taskId",taskId);
+        p.put("name","name");
+        p.put("msg",null);
+        sqlSessionTemplate.insert("ApplyMapper.insertTwo",p);
         return jsonObject;
     }
+    @RequestMapping(value = "/receiveTest",method = {RequestMethod.POST,RequestMethod.GET})
+    @ResponseBody
+    public void  receiveTest(@RequestBody BaseParam param){
+        Map<String, Object> build = param.build();
+    }
+
 }

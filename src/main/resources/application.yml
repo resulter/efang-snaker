@@ -19,7 +19,7 @@ spring:
     removeAbandonedTimeout: 1800
     url: jdbc:mysql://localhost:3306/snaker?serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=UTF-8&useSSL=false
     username: root
-    password: 123
+    password: root
   activemq:
     broker-url: tcp://192.168.8.85:61616
     pool:

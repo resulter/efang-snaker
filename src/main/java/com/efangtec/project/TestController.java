@@ -1,5 +1,6 @@
 package com.efangtec.project;
 
+import com.efangtec.project.entity.BaseParam;
 import com.efangtec.project.service.ApplyService;
 import com.efangtec.workflow.engine.DBAccess;
 import com.efangtec.workflow.engine.access.Page;
@@ -13,6 +14,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -57,8 +59,12 @@ public class TestController {
      * @return
      */
     @RequestMapping(value = "/startProcess")
-    public String startProcess(String processId, String name, String operator, String msg) {
-        applyService.startProcess(processId, name, operator, msg);
+    public String startProcess(@RequestBody BaseParam param) {
+        Map<String, Object> build = param.build();
+        String operator = (String) build.get("operator");
+        String processId = (String) build.get("processId");
+
+        applyService.startProcess(processId, "name", operator, "msg");
         return "redirect:/toProcess";
     }
 
