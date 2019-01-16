@@ -1,5 +1,6 @@
 package com.efangtec.project.service;
 
+import com.alibaba.fastjson.JSON;
 import com.efangtec.workflow.engine.DBAccess;
 import com.efangtec.workflow.engine.access.QueryFilter;
 import com.efangtec.workflow.engine.entity.Order;
@@ -25,18 +26,16 @@ public class ApplyService {
     DBAccess access;
 
     @Transactional
-    public String startProcess(String processId,String name,String operator,String msg){
+    public String startProcess(String processId,String operator,Map<String,Object> params){
         if(StringUtils.isNotEmpty(processId)) {
-            Map<String, Object> params = new HashMap<String, Object>();
-            params.put("msg",msg);
             Order order = facets.startAndExecute(processId, operator, params);
             List<Task> activeTasks = facets.getEngine().query().getActiveTasks(new QueryFilter().setOrderId(order.getId()));
             String taskId = activeTasks.get(0).getId();
             Map<String,String> p = new HashMap<>();
             p.put("orderId",order.getId());
-            p.put("name",name);
+            p.put("name","name");
             p.put("taskId",taskId);
-            p.put("msg",msg);
+            p.put("msg", JSON.toJSONString(params));
             sqlSessionTemplate.insert("ApplyMapper.insertTwo",p);
             sqlSessionTemplate.insert("ApplyMapper.insertWithOrder",p);
         }

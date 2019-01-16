@@ -64,7 +64,7 @@ public class TestController {
         String operator = (String) build.get("operator");
         String processId = (String) build.get("processId");
 
-        applyService.startProcess(processId, "name", operator, "msg");
+        applyService.startProcess(processId, operator, param.build());
         return "redirect:/toProcess";
     }
 

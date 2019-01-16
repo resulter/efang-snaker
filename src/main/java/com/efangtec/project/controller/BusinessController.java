@@ -68,8 +68,35 @@ public class BusinessController {
     }
     @RequestMapping(value = "/receiveTest",method = {RequestMethod.POST,RequestMethod.GET})
     @ResponseBody
-    public void  receiveTest(@RequestBody BaseParam param){
+    public JSONObject  receiveTest(@RequestBody BaseParam param){
         Map<String, Object> build = param.build();
+        String expr = (String) build.get("expr");
+        String opt = (String) build.get("opt");
+        String name = (String) build.get("name");
+        String taskId = (String) build.get("taskId");
+        String operator = (String) build.get("operator");
+        String orderId = (String) build.get("orderId");
+        JSONObject jsonObject = new JSONObject();
+        Map<String,Object> params = new HashMap<>();
+        if (StringUtils.isNotEmpty(expr)){
+            params.put(expr,opt);
+            params.put("name",name);
+        }
+        facets.execute(taskId,operator,params);
+        Task task = access.queryObject(Task.class, "select * from wf_task where order_id=? limit 1", new Object[]{orderId});
+        if(ObjectUtils.isEmpty(task)){
+            jsonObject.put("code",100);
+        }else {
+            jsonObject.put("code",200);
+            jsonObject.put("id", task.getId());
+        }
+        Map<String,Object> p = new HashMap<>();
+        p.put("orderId",orderId);
+        p.put("taskId",taskId);
+        p.put("name","name");
+        p.put("msg",JSON.toJSONString(build));
+        sqlSessionTemplate.insert("ApplyMapper.insertTwo",p);
+        return jsonObject;
     }
 
 }

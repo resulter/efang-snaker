@@ -264,7 +264,12 @@
                 return false;
             },
             success: function (data) {
-                console.log("aaaaa " + data.id);
+                if(data.code == 200) {
+                    window.location.href = getBaseUrl() + "/toOrderDetail?processId=" + processId + "&orderId=" + orderId + "&taskId=" + data.id;
+                }else {
+                    window.location.href = getBaseUrl() + "/toActive";
+
+                }
             }
         });
     }
