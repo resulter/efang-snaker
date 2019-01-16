@@ -40,6 +40,7 @@ public class SnakerHelper {
 	private static Map<Class<? extends NodeModel>, String> mapper = new HashMap<Class<? extends NodeModel>, String>();
 	static {
 		mapper.put(ExtTaskModel.class, "task");
+		mapper.put(TaskModel.class, "task");
 		mapper.put(CustomModel.class, "custom");
 		mapper.put(DecisionModel.class, "decision");
 		mapper.put(EndModel.class, "end");

@@ -37,3 +37,15 @@ function getArray(s) {
     return arr;
 
 }
+function getFormJsonData(form) {
+    var unindexed_array = form;
+    var indexed_array = {};
+    $.map(unindexed_array, function (n, i) {
+        indexed_array[n['name']] = n['value'];
+    });
+    var s = JSON.stringify(indexed_array);
+    var param = '{"paramMap": ';
+    param += s;
+    param += '}';
+    return param;
+}

@@ -30,7 +30,7 @@
                 <th th:text="${order.taskName}"></th>
                 <th th:text="${order.taskCreateTime}"></th>
                 <th>
-                    <!--<a href="#editModal" th:onclick="view([[${order.processId}]],[[${order.orderId}]])">查看流程图</a>-->
+                    <a href="#editModal" th:onclick="view([[${order.processId}]],[[${order.orderId}]])">查看流程图</a>
                     <a href="#editModal" th:onclick="detail([[${order.processId}]],[[${order.orderId}]],[[${order.taskId}]])">查看详情</a>
                 </th>
             </tr>

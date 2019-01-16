@@ -52,7 +52,7 @@
     <div class="col-md-2"></div>
 </div>
 <table class="properties_all" align="center" border="1" cellpadding="0" cellspacing="0" style="margin-top: 0px;display: none">
-    <div id="snakerflow" style="border: 1px solid #d2dde2; margin-top:10px; margin-left:10px; width:98%;display: none;">
+    <div id="snakerflow" style="border: 1px solid #d2dde2; margin-top:10px; margin-left:10px; width:98%;">
     </div>
 </table>
 <!-- 模态框（Modal） -->
@@ -132,12 +132,12 @@
             display(data.process, data.state,orderId);
         }
     });
-   /* jQuery.ax(getBaseUrl() + "/process/static/json",{processId: processId,orderId: orderId},false,"get","",function (res) {
+    jQuery.ax(getBaseUrl() + "/process/static/json",{processId: processId,orderId: orderId},false,"get","",function (res) {
         display(res.process, res.state);
         // console.log(res);
     },function (res) {
         console.log(res);
-    })*/
+    })
 
 </script>
 </body>

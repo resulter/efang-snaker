@@ -1,6 +1,9 @@
 package com.efangtec.project;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.efangtec.project.entity.BaseParam;
+import com.efangtec.project.entity.Two;
 import com.efangtec.project.service.ApplyService;
 import com.efangtec.workflow.engine.DBAccess;
 import com.efangtec.workflow.engine.access.Page;
@@ -125,5 +128,24 @@ public class TestController {
     @ResponseBody
     public void excuteTask(String taskId) {
         facets.execute(taskId, "testOperator", null);
+    }
+
+    @RequestMapping(value = "/getFormData")
+    @ResponseBody
+    public JSONObject getFormData(String orderId) {
+        JSONObject jsonObject = new JSONObject();
+        JSONArray jsonArray = new JSONArray();
+        List<HistoryTask> historyTasks = facets.getEngine().query().getHistoryTasks(new QueryFilter().setOrderId(orderId));
+        for (HistoryTask historyTask:historyTasks) {
+            JSONObject jo = new JSONObject();
+            jo.put("name",historyTask.getTaskName());
+            jo.put("id",historyTask.getId());
+            jo.put("orderId",orderId);
+            Two two = access.queryObject(Two.class, "select * from ap_two where task_id = ?", new Object[]{historyTask.getId()});
+            jo.put("formData",two);
+            jsonArray.add(jo);
+        }
+        jsonObject.put("data",jsonArray);
+        return jsonObject;
     }
 }

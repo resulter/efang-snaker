@@ -19,6 +19,11 @@
     <!--<script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>-->
     <script src="https://cdn.staticfile.org/foundation/5.5.3/js/foundation.min.js"></script>
     <script src="https://cdn.staticfile.org/foundation/5.5.3/js/vendor/modernizr.js"></script>
+    <style>
+        .disabled{
+             pointer-events:none;
+             }
+    </style>
 </head>
 <body>
 <span th:include="basepath::html"></span>
@@ -80,6 +85,7 @@
     var taskId = [[${taskId}]];
     var taskName = [[${taskName}]];
     var operator = "操作者";
+    var flag;
 
     $.ajax({
         type: 'GET',
@@ -108,14 +114,14 @@
                     html = initDecision(node, i, ep, node.form);
                 }
                 if (node.name == taskName) {
-                    tabs_html += '<li role="presentation" class="active"><a href="#Section' + i + '" aria-controls="home" role="tab" data-toggle="tab">' + node.displayName + '</a></li>';
+                    tabs_html += '<li role="presentation" class="active" id="tabs' + i+'" value="' + node.name+'"><a href="#Section' + i + '" aria-controls="home" role="tab" data-toggle="tab">' + node.displayName + '</a></li>';
                     tabs_content += '<div role="tabpanel" class="tab-pane fade in active click_evt" id="Section' + i + '">\n' +
                         '                        <h3>' + node.displayName + '</h3>\n';
                     tabs_content += html;
 
                 }
                 else {
-                    tabs_html += '<li role="presentation"><a href="#Section' + i + '" aria-controls="profile" role="tab" data-toggle="tab">' + node.displayName + '</a></li>';
+                    tabs_html += '<li role="presentation" id="tabs' + i+'" value="' + node.name+ '"><a href="#Section' + i + '" aria-controls="profile" role="tab" data-toggle="tab">' + node.displayName + '</a></li>';
                     tabs_content += ' <div role="tabpanel" class="tab-pane fade click_evt" id="Section' + i + '">\n' +
                         '                        <h3>' + node.displayName + '</h3>\n';
                     tabs_content += html;
@@ -129,8 +135,10 @@
             }
             $(".nav-tabs").append(tabs_html);
             $(".tab-content").append(tabs_content);
+
             //load为异步调用方法，暂时先这么解决一下
             //可能存在的问题：两层循环可能会出现问题，但好像也不会。。
+            flag = true;
             for (var i = 0; i < data.length; i++) {
                 var node = data[i];
                 $("#loadContent" + i).html("");
@@ -143,6 +151,8 @@
                 for (var i = 0; i < data.length; i++) {
                     $("#form" + i).append($("#loadContent" + i).children());
                 }
+                //表单加载完成之后初始化表单数据
+                initData();
             }
 
 
@@ -274,20 +284,53 @@
         });
     }
 
+    function initData() {
+        if(flag) {
+            console.log("initData orderId = " + orderId);
 
 
-    function getFormJsonData(form) {
-        var unindexed_array = form;
-        var indexed_array = {};
-        $.map(unindexed_array, function (n, i) {
-            indexed_array[n['name']] = n['value'];
-        });
-        var s = JSON.stringify(indexed_array);
-        var param = '{"paramMap": ';
-        param += s;
-        param += '}';
-        return param;
+            $.ajax({
+                type: 'POST',
+                url: getBaseUrl() + "/getFormData",
+                async: false,
+                data: "orderId=" + orderId,
+                dataType: "json",
+                // contentType: 'application/json; charset=UTF-8',
+                error: function () {
+                    return false;
+                },
+                success: function (data) {
+                    // $("#tabs0").addClass("active");
+                    console.log(data);
+                    var db = data.data;
+                    var str = taskName + "-";
+                    for (var j = 0; j < db.length; j++) {
+                        str +=db[j].name + "-" ;
+                    }
+                    console.log(str);
+
+                    var a = $("li");
+                    for (var i=0;i<a.length;i++) {
+                        var display = $(a[i]).attr("value");
+                        if(str.indexOf(display) != -1){
+                            console.log("存在" + display);
+                        }else {
+                            $("#tabs" + i).addClass("disabled");
+                            console.log("不存在");
+                        }
+                    }
+                }
+            });
+            flag = false;
+        }else {
+        }
+
     }
+    $(".disabled").click(function (event) {
+         event.preventDefault();
+    });
+
+
 </script>
 </body>
 </html>
