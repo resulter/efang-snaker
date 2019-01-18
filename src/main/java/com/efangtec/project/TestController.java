@@ -135,7 +135,8 @@ public class TestController {
     public JSONObject getFormData(String orderId) {
         JSONObject jsonObject = new JSONObject();
         JSONArray jsonArray = new JSONArray();
-        List<HistoryTask> historyTasks = facets.getEngine().query().getHistoryTasks(new QueryFilter().setOrderId(orderId));
+//        List<HistoryTask> historyTasks = facets.getEngine().query().getHistoryTasks(new QueryFilter().setOrderId(orderId));
+        List<HistoryTask> historyTasks = access.queryList(HistoryTask.class,"SELECT * FROM `wf_hist_task` where order_Id =?",new Object[]{orderId});
         for (HistoryTask historyTask:historyTasks) {
             JSONObject jo = new JSONObject();
             jo.put("name",historyTask.getTaskName());

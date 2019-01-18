@@ -152,7 +152,10 @@
                     $("#form" + i).append($("#loadContent" + i).children());
                 }
                 //表单加载完成之后初始化表单数据
-                initData();
+                //如果不设置延时，可能表单还没加载完成就加载数据了，数据会回显失败
+                setTimeout(function () {
+                    initData();
+                },1000);
             }
 
 
@@ -178,13 +181,6 @@
              }
          });*/
         result += '<form class="form-horizontal" id="form' + i + '">\n' +
-            '                <div class="form-group" style="padding-top: 5px">\n' +
-            '                    <label class="col-sm-2 control-label">审核</label>\n' +
-            '                    <div class="col-sm-8">\n' +
-            '                        <input type="text" name="name" class="form-control" id="name"' + i + ' placeholder="name">\n' +
-            '                        <span class="help-block"></span>\n' +
-            '                    </div>\n' +
-            '                </div>\n' +
             '            </form>';
         // result = data_html;
         return result;
@@ -194,14 +190,7 @@
         // alert(expr);
         var operation = data.operation;
         var html = "";
-        html += '<form class="form-horizontal" id="form' + i + '">\n' +
-            '                <div class="form-group" style="padding-top: 5px">\n' +
-            '                    <label class="col-sm-2 control-label">审核</label>\n' +
-            '                    <div class="col-sm-8">\n' +
-            '                        <input type="text" name="name" class="form-control" id="name"' + i + ' placeholder="name">\n' +
-            '                        <span class="help-block"></span>\n' +
-            '                    </div>\n' +
-            '                </div>\n' +
+        html += '<form class="form-horizontal" id="form' + i + '" name="form' + i + '">\n' +
             '                <div class="form-group">\n' +
             '                    <label class="col-sm-2 control-label">审核操作</label>\n' +
             '                    <div class="col-sm-8">\n';
@@ -303,22 +292,33 @@
                     // $("#tabs0").addClass("active");
                     console.log(data);
                     var db = data.data;
+                    //str表示当前节点和之前的节点
                     var str = taskName + "-";
+                    //arr 表示之前的节点
+                    var arr = new  Array();
                     for (var j = 0; j < db.length; j++) {
                         str +=db[j].name + "-" ;
+                        arr.push(db[j].name);
                     }
-                    console.log(str);
-
                     var a = $("li");
+                    //未涉及的节点置为不可点击
                     for (var i=0;i<a.length;i++) {
                         var display = $(a[i]).attr("value");
                         if(str.indexOf(display) != -1){
-                            console.log("存在" + display);
                         }else {
                             $("#tabs" + i).addClass("disabled");
-                            console.log("不存在");
                         }
                     }
+                    var b = data.data;
+                    //数据回显
+                    for (var i = 0; i < b.length; i++) {
+                        var options = { jsonValue: b[i].formData.msg, isDebug: false };
+                        $("#form" +i).initForm(options);
+                    }
+                    for (var i = 0; i < arr.length; i++) {
+                        $("#form" +i).setUnEditable();
+                    }
+
                 }
             });
             flag = false;
