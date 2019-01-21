@@ -7,6 +7,8 @@
     <script th:src="@{/js/ajax.js}"></script>
     <link th:href="@{/js/bootstrap-3.3.7-dist/css/bootstrap.css}" rel="stylesheet"/>
     <script th:src="@{/js/bootstrap-3.3.7-dist/js/bootstrap.js}"></script>
+    <link th:href="@{/js/multiple/dist/css/bootstrap-select.css}" rel="stylesheet"/>
+    <script th:src="@{/js/multiple/dist/js/bootstrap-select.js}"></script>
     <script th:src="@{/js/common.js}"></script>
 
 </head>
@@ -72,12 +74,26 @@
                 $("#loadContent").load(node.form + ".html .form-group", "", function () {
                     $(".form-horizontal").append($("#loadContent").children());
                 });
+
+                if(node.actorAction == "ALL"){
+                    var html ='<div class="form-group">\n' +
+                        '                        <label class="col-sm-2 control-label">deptName</label>\n' +
+                        '                        <div class="col-sm-4">\n' +
+                        '                            <select class="selectpicker add" multiple data-live-search="true" id="actorSelector0">\n' +
+                        '                            </select>\n' +
+                        '                        </div>\n' +
+                        '                    </div>';
+                    $(".form-horizontal").append(html);
+                }
+                initSelector();
             }
         });
     }
 
     $("#startConfirm").on("click", function () {
-        var sd = '"processId":"' + processId + '","operator":"' + operator + '"';
+        var selector =JSON.stringify($('#actorSelector0').val()).replace(/\"/g,'').replace('[','').replace(']','').replace(/,/g,'-');
+        console.log(selector);
+        var sd = '"processId":"' + processId + '","operator":"' + operator + '","selector":"' + selector + '"';
         var paramMap = '{"paramMap":' + JSON.stringify(getFormData($("#form").serializeArray(), getArray(sd))) + '}';
         // console.log("******* " + JSON.stringify(getFormData($("#form" + i).serializeArray(), getArray(sd))));
         $.ajax({
@@ -101,6 +117,14 @@
     $("#close").on("click",function () {
         window.location.href = getBaseUrl() +"/toProcess";
     })
+
+    function initSelector() {
+        for (var i = 0; i < 10; i++) {
+            var html = '<option value="' + i+'">选项' +i+'</option>';
+            $(".add").append(html);
+
+        }
+    }
 </script>
 </body>
 </html>

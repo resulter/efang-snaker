@@ -14,11 +14,14 @@
     <link th:href="@{/js/bootstrap-3.3.7-dist/css/bootstrap.css}" rel="stylesheet"/>
     <link th:href="@{/css/snaker.css}" rel="stylesheet"/>
     <script th:src="@{/js/bootstrap-3.3.7-dist/js/bootstrap.js}"></script>
+    <link th:href="@{/js/multiple/dist/css/bootstrap-select.css}" rel="stylesheet"/>
+    <script th:src="@{/js/multiple/dist/js/bootstrap-select.js}"></script>
     <script th:src="@{/js/common.js}"></script>
     <link rel="stylesheet" href="https://cdn.staticfile.org/foundation/5.5.3/css/foundation.min.css">
     <!--<script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>-->
     <script src="https://cdn.staticfile.org/foundation/5.5.3/js/foundation.min.js"></script>
     <script src="https://cdn.staticfile.org/foundation/5.5.3/js/vendor/modernizr.js"></script>
+
     <style>
         .disabled{
              pointer-events:none;
@@ -113,6 +116,20 @@
                     var ep = node.expr.substr(2, node.expr.length - 3);
                     html = initDecision(node, i, ep, node.form);
                 }
+                //如果下一个节点是会签节点添加selector
+                if(node.actorAction == "ALL"){
+                    html +='<div class="form-group">\n' +
+                        '                        <label class="col-sm-2 control-label">deptName</label>\n' +
+                        '                        <div class="col-sm-4">\n' +
+                        '                            <select class="selectpicker add" multiple data-live-search="true" id="actorSelector' + i+'">\n' +
+                        '                            </select>\n' +
+                        '                        </div>\n' +
+                        '                    </div>';
+                }
+
+
+                html +='</form>';
+
                 if (node.name == taskName) {
                     tabs_html += '<li role="presentation" class="active" id="tabs' + i+'" value="' + node.name+'"><a href="#Section' + i + '" aria-controls="home" role="tab" data-toggle="tab">' + node.displayName + '</a></li>';
                     tabs_content += '<div role="tabpanel" class="tab-pane fade in active click_evt" id="Section' + i + '">\n' +
@@ -157,11 +174,14 @@
                     initData();
                 },1000);
             }
-
+            initSelector();
 
         }
     });
 
+    /*
+    form表单没有闭合，可能动态添加selector组件
+     */
     function initTask(i, form) {
         var result = "";
         /* $.ajax({
@@ -180,12 +200,19 @@
 
              }
          });*/
-        result += '<form class="form-horizontal" id="form' + i + '">\n' +
-            '            </form>';
+        result += '<form class="form-horizontal" id="form' + i + '">\n';
         // result = data_html;
         return result;
     }
 
+    /**
+     * form表单没有闭合，可能动态添加selector组件
+     * @param data
+     * @param i
+     * @param expr
+     * @param form
+     * @returns {string}
+     */
     function initDecision(data, i, expr, form) {
         // alert(expr);
         var operation = data.operation;
@@ -207,8 +234,7 @@
         }
         html += '</div>\n' +
             '                </div>\n' +
-            '                <input name="expr" type="hidden" id="expr" value="' + expr + '">' +
-            '            </form>';
+            '                <input name="expr" type="hidden" id="expr" value="' + expr + '">';
         return html;
     }
 
@@ -330,7 +356,13 @@
          event.preventDefault();
     });
 
+    function initSelector() {
+        for (var i = 0; i < 10; i++) {
+            var html = '<option value="' + i+'">选项' +i+'</option>';
+            $(".add").append(html);
 
+        }
+    }
 </script>
 </body>
 </html>
