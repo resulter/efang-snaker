@@ -9,6 +9,7 @@ import com.efangtec.workflow.engine.entity.HistoryTask;
 import com.efangtec.workflow.engine.entity.Process;
 import com.efangtec.workflow.engine.model.*;
 import com.efangtec.workflow.service.SnakerEngineFacets;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -76,7 +77,7 @@ public class FlowController {
             viewModel.setName(model.getName());
             viewModel.setDisplayName(model.getDisplayName());
             viewModel.setForm(model.getForm());
-
+            viewModel.setPerformType(model.getPerformType());
             NodeModel nodeModel = processModel.getNode(model.getName());
             List<TransitionModel> outputs = nodeModel.getOutputs();
             StringBuffer disName = new StringBuffer();
@@ -121,6 +122,15 @@ public class FlowController {
             }
             viewModels.add(viewModel);
         }
+
+        for (int i = 0; i < viewModels.size() - 1; i++) {
+            if(viewModels.get(i+1).getPerformType().equals(TaskModel.PERFORMTYPE_ALL)){
+                viewModels.get(i).setActorAction(TaskModel.PERFORMTYPE_ALL);
+            }else {
+                viewModels.get(i).setActorAction(TaskModel.PERFORMTYPE_ANY);
+            }
+        }
+
         return viewModels;
     }
 

@@ -18,10 +18,13 @@
 <transition displayName="告补" g="200,285" name="transition8" offset="0,0" to="apply"/>
 <transition displayName="通过" g="" name="transition7" offset="0,0" to="task3"/>
 </decision>
-<task assignee="TwoDoctor" autoExecute="Y" displayName="分配两名医生" form="anjin/distribution" layout="872,44,-1,-1" name="task4" performType="ALL">
-<transition g="" name="transition11" offset="0,0" to="task5"/>
+<task assignee="ProjectOffice" autoExecute="Y" displayName="分配两名医生" form="anjin/distribution" layout="872,44,-1,-1" name="task4" performType="ANY">
+<transition g="" name="transition1" offset="0,0" to="task1"/>
 </task>
 <task assignee="ProjectOffice" displayName="项目办_终审" form="anjin/final" layout="870,273,-1,-1" name="task5" performType="ANY">
 <transition g="" name="transition10" offset="0,0" to="end1"/>
+</task>
+<task assignee="TwoDoctor" autoExecute="Y" displayName="医生审核" form="anjin/DoctprAudit" layout="867,160,-1,-1" name="task1" performType="ALL" taskType="Major">
+<transition g="" name="transition3" offset="0,0" to="task5"/>
 </task>
 </process>

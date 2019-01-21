@@ -308,4 +308,19 @@ public class TaskModel extends com.efangtec.workflow.engine.model.WorkModel {
 	public void setBusiness(Map<String, Object> business) {
 		this.business = business;
 	}
+
+	/**
+	 * 标注下一个task任务是否为会签任务
+	 * ANY = 不是
+	 * ALL = 是
+	 */
+	private String actorAction;
+
+	public String getActorAction() {
+		return actorAction;
+	}
+
+	public void setActorAction(String actorAction) {
+		this.actorAction = actorAction;
+	}
 }

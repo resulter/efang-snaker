@@ -149,4 +149,10 @@ public class TestController {
         jsonObject.put("data",jsonArray);
         return jsonObject;
     }
+    @RequestMapping(value = "toStartView", method = RequestMethod.GET)
+    public ModelAndView toStartView(ModelAndView mv, String processId) {
+        mv.setViewName("/start");
+        mv.addObject("processId", processId);
+        return mv;
+    }
 }

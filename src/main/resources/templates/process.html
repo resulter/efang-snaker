@@ -78,7 +78,8 @@
         $('#myModal').modal('show');
 
         $("#startConfirm").attr("processId",process_id);
-        jQuery.ax(getBaseUrl() + "/snaker/flow/node",{processId:process_id,orderId:""},true,"get","json",function (data) {
+        window.location.href = getBaseUrl() + "/toStartView?processId=" + process_id;
+       /* jQuery.ax(getBaseUrl() + "/toStartView",{processId:process_id,orderId:""},true,"get","json",function (data) {
             var node = data[0];
             $("#loadContent").load(node.form + ".html .form-group", "", function () {
                 $(".form-horizontal").append($("#loadContent" ).children());
@@ -86,7 +87,7 @@
 
         },function (res) {
 
-        });
+        });*/
         // confirm(process_id)
     }
 
