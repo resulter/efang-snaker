@@ -22,4 +22,19 @@
         INSERT INTO `ap_two` (`name`, `order_id`, `task_id`, `msg`) VALUES (#{name},#{orderId},#{taskId},#{msg});
     </insert>
 
+    <insert id="insertActorTaskBatch"  parameterType="java.util.List">
+        insert into bs_actor_task
+        ( actor_id, task_id ,order_id)
+        values
+        <foreach collection="list" item="item" index="index" separator="," >
+            (#{item.actorId},
+            #{item.taskId},
+            #{item.orderId}
+            )
+        </foreach>
+    </insert>
+
+    <delete id="deleteActorTaskByTaskId">
+	  delete  from  bs_actor_task   where   task_id = #{taskId}
+   </delete>
 </mapper>

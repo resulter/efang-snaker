@@ -3,6 +3,8 @@ package com.efangtec.project;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.efangtec.project.entity.BaseParam;
+import com.efangtec.project.entity.BsActor;
+import com.efangtec.project.entity.BsActorTask;
 import com.efangtec.project.entity.Two;
 import com.efangtec.project.service.ApplyService;
 import com.efangtec.workflow.engine.DBAccess;
@@ -11,9 +13,11 @@ import com.efangtec.workflow.engine.access.QueryFilter;
 import com.efangtec.workflow.engine.entity.*;
 import com.efangtec.workflow.engine.entity.Process;
 import com.efangtec.workflow.engine.helper.StringHelper;
+import com.efangtec.workflow.engine.model.ProcessModel;
 import com.efangtec.workflow.engine.model.TaskModel;
 import com.efangtec.workflow.service.SnakerEngineFacets;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,7 +63,6 @@ public class TestController {
     /**
      * 启动流程
      *
-     * @param processId
      * @return
      */
     @RequestMapping(value = "/startProcess")
@@ -66,8 +70,12 @@ public class TestController {
         Map<String, Object> build = param.build();
         String operator = (String) build.get("operator");
         String processId = (String) build.get("processId");
-
-        applyService.startProcess(processId, operator, param.build());
+        Process process = facets.getEngine().process().getProcessById(processId);
+        ProcessModel processModel = process.getModel();
+        List<TaskModel> models = process.getModel().getModels(TaskModel.class);
+        //查询第二个节点的参与者，主要作用是 当第二个节点为会签任务时添加会签变量
+        String s = models.size()>2&&StringUtils.isNotEmpty(models.get(1).getAssignee())?models.get(1).getAssignee():"";
+        applyService.startProcess(processId, operator, param.build(),s);
         return "redirect:/toProcess";
     }
 
@@ -136,7 +144,11 @@ public class TestController {
         JSONObject jsonObject = new JSONObject();
         JSONArray jsonArray = new JSONArray();
 //        List<HistoryTask> historyTasks = facets.getEngine().query().getHistoryTasks(new QueryFilter().setOrderId(orderId));
-        List<HistoryTask> historyTasks = access.queryList(HistoryTask.class,"SELECT * FROM `wf_hist_task` where order_Id =?",new Object[]{orderId});
+        //这个查询用来按照tackName进行了分组，主要是解决会签时同一步可能有多个task，暂定200，原则上不会有这个多节点
+        List<HistoryTask> historyTasks = access.queryList(HistoryTask.class,"SELECT * from (SELECT * FROM `wf_hist_task` where order_Id =?  ORDER BY id desc  LIMIT 200 ) as b GROUP BY task_Name",new Object[]{orderId});
+        //当前任务，如果有多个则可能是会签任务
+        List<Task> tasks = access.queryList(Task.class, "select * from wf_task where order_Id =?", new Object[]{orderId});
+
         for (HistoryTask historyTask:historyTasks) {
             JSONObject jo = new JSONObject();
             jo.put("name",historyTask.getTaskName());
@@ -144,6 +156,8 @@ public class TestController {
             jo.put("orderId",orderId);
             Two two = access.queryObject(Two.class, "select * from ap_two where task_id = ?", new Object[]{historyTask.getId()});
             jo.put("formData",two);
+            jo.put("tasks",tasks.toString());
+            jo.put("taskSize",tasks.size());
             jsonArray.add(jo);
         }
         jsonObject.put("data",jsonArray);
@@ -154,5 +168,32 @@ public class TestController {
         mv.setViewName("/start");
         mv.addObject("processId", processId);
         return mv;
+    }
+
+
+    @RequestMapping("/getOperatorList")
+    @ResponseBody
+    public JSONObject getOperatorList(){
+        JSONObject jsonObject = new JSONObject();
+        List<BsActor> bsActors = access.queryList(BsActor.class, "select * from bs_actor", new Object[]{});
+        jsonObject.put("list",bsActors);
+        return jsonObject;
+    }
+    @RequestMapping("/getOperatorListDoing")
+    @ResponseBody
+    public JSONObject getOperatorListDoing(String orderId){
+        JSONObject jsonObject = new JSONObject();
+        List<BsActor> result = new ArrayList<>();
+        List<BsActor> bsActors = access.queryList(BsActor.class, "select * from bs_actor", new Object[]{});
+        List<BsActorTask> bsActorTasks = access.queryList(BsActorTask.class, "select * from bs_actor_task where order_id=?", new Object[]{orderId});
+        for (int i = 0; i < bsActorTasks.size(); i++) {
+            for (int j = 0; j < bsActors.size(); j++) {
+                if(bsActors.get(j).getId() == bsActorTasks.get(i).getActorId()){
+                    result.add(bsActors.get(j));
+                }
+            }
+        }
+        jsonObject.put("list",result);
+        return jsonObject;
     }
 }

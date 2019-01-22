@@ -119,14 +119,23 @@
                 //如果下一个节点是会签节点添加selector
                 if(node.actorAction == "ALL"){
                     html +='<div class="form-group">\n' +
-                        '                        <label class="col-sm-2 control-label">deptName</label>\n' +
+                        '                        <label class="col-sm-2 control-label">选择会签人</label>\n' +
                         '                        <div class="col-sm-4">\n' +
                         '                            <select class="selectpicker add" multiple data-live-search="true" id="actorSelector' + i+'">\n' +
                         '                            </select>\n' +
                         '                        </div>\n' +
                         '                    </div>';
                 }
-
+                //如果当前节点是会签节点
+                if(node.performType == "ALL"){
+                    html +='<div class="form-group">\n' +
+                        '                        <label class="col-sm-2 control-label">选择操作人</label>\n' +
+                        '                        <div class="col-sm-4">\n' +
+                        '                            <select class="form-control add2" id="selectOperator' + i+'" name="selectOperator' + i+ '">\n' +
+                        '                            </select>\n' +
+                        '                        </div>\n' +
+                        '                    </div>';
+                }
 
                 html +='</form>';
 
@@ -175,6 +184,7 @@
                 },1000);
             }
             initSelector();
+            initSelectorDoing(taskId);
 
         }
     });
@@ -273,8 +283,16 @@
           var  param = '{"paramMap": ';
           param +=JSON.stringify(getFormData($("#form"+i).serializeArray()));
           param+='}';*/
+        //单选的
+        var selectVal = $("#selectOperator" + i).val();
+        var s =$('#actorSelector'+i).val();
+        var selector = ""
+        if( s!=""&&s != null){
+            selector =JSON.stringify($('#actorSelector'+i).val()).replace(/\"/g,'').replace('[','').replace(']','').replace(/,/g,'-');
 
-        var sd = '"taskId":"' + taskId + '","processId":"' + processId + '","orderId":"' + orderId + '"';
+        }
+        //多选的
+        var sd = '"taskId":"' + taskId + '","processId":"' + processId + '","orderId":"' + orderId + '","select":"' + selectVal + '","selector":"' + selector + '"';
         var paramMap = '{"paramMap":' + JSON.stringify(getFormData($("#form" + i).serializeArray(), getArray(sd))) + '}';
         // console.log("******* " + JSON.stringify(getFormData($("#form" + i).serializeArray(), getArray(sd))));
 
@@ -342,9 +360,15 @@
                         $("#form" +i).initForm(options);
                     }
                     for (var i = 0; i < arr.length; i++) {
-                        $("#form" +i).setUnEditable();
-                    }
+                        //如果返回的数据中tasks信息中包含当前taskId，不操作，
+                        //如果不包含，则该待办任务已经完成，置为不可编辑
+                        var tasks =data.data[i].tasks;
+                        if(tasks.indexOf(taskId) != -1){
 
+                        }else {
+                            $("#form" + i).setUnEditable();
+                        }
+                    }
                 }
             });
             flag = false;
@@ -357,11 +381,34 @@
     });
 
     function initSelector() {
-        for (var i = 0; i < 10; i++) {
-            var html = '<option value="' + i+'">选项' +i+'</option>';
-            $(".add").append(html);
+        $.ajax({
+            url: getBaseUrl() + "/getOperatorList",
+            dataType: "json",
+            async: false,
+            success: function (data) {
+                for (var i = 0; i < data.list.length; i++) {
+                    var html = '<option value="' + data.list[i].id+'">' +data.list[i].name+'</option>';
+                    $(".add").append(html);
+                }
 
-        }
+            }
+
+        });
+    }
+    function initSelectorDoing(taskId) {
+        $.ajax({
+            url: getBaseUrl() + "/getOperatorListDoing?orderId=" + orderId,
+            dataType: "json",
+            async: false,
+            success: function (data) {
+                for (var i = 0; i < data.list.length; i++) {
+                    var html = '<option value="' + data.list[i].id+'">' +data.list[i].name+'</option>';
+                    $(".add2").append(html);
+                }
+
+            }
+
+        });
     }
 </script>
 </body>
