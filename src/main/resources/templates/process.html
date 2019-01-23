@@ -78,7 +78,7 @@
         $('#myModal').modal('show');
 
         $("#startConfirm").attr("processId",process_id);
-        window.location.href = getBaseUrl() + "/toStartView?processId=" + process_id;
+        window.location.href = getBaseUrl() + "/view/toStartView?processId=" + process_id;
        /* jQuery.ax(getBaseUrl() + "/toStartView",{processId:process_id,orderId:""},true,"get","json",function (data) {
             var node = data[0];
             $("#loadContent").load(node.form + ".html .form-group", "", function () {
@@ -99,7 +99,7 @@
         // console.log("******* " + JSON.stringify(getFormData($("#form" + i).serializeArray(), getArray(sd))));
         $.ajax({
             type: 'POST',
-            url: getBaseUrl() + "/startProcess",
+            url: getBaseUrl() + "/view/startProcess",
             async: false,
             data: paramMap,
             dataType: "text",

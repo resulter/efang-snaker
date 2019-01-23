@@ -76,12 +76,12 @@
 
     function detail(processId,orderId,taskId) {
         console.log(processId + " " + orderId + " " + taskId);
-        window.location.href=getBaseUrl() + "/toOrderDetail?processId=" + processId + "&orderId=" + orderId+ "&taskId=" + taskId;
+        window.location.href=getBaseUrl() + "/view/toOrderDetail?processId=" + processId + "&orderId=" + orderId+ "&taskId=" + taskId;
     }
 
 
     function view(processId, orderId) {
-        window.location.href=getBaseUrl() + "/toActiveDetail?processId=" + processId + "&orderId=" + orderId;
+        window.location.href=getBaseUrl() + "/view/toActiveDetail?processId=" + processId + "&orderId=" + orderId;
         console.log(processId + "   : " + orderId);
 
     }
@@ -97,7 +97,7 @@
         var processId = $("#startConfirm").attr("processId");
         var name = $("#name").val();
         alert(processId + "   :  " + name);
-        jQuery.ax(getBaseUrl() + "/startProcess", {
+        jQuery.ax(getBaseUrl() + "/view/startProcess", {
             processId: processId,
             name: name,
             operator: "operator"

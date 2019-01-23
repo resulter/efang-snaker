@@ -98,29 +98,29 @@
         // console.log("******* " + JSON.stringify(getFormData($("#form" + i).serializeArray(), getArray(sd))));
         $.ajax({
             type: 'POST',
-            url: getBaseUrl() + "/startProcess",
+            url: getBaseUrl() + "/view/startProcess",
             async: false,
             data: paramMap,
             dataType: "text",
             contentType: 'application/json; charset=UTF-8',
             success: function (data) {
                 alert("启动成功");
-                window.location.href = getBaseUrl() +"/toActive";
+                window.location.href = getBaseUrl() +"/view/toActive";
             },
             error: function () {
                 alert("启动失败");
-                window.location.href = getBaseUrl() +"/toProcess";
+                window.location.href = getBaseUrl() +"/view/toProcess";
             }
 
         });
     });
     $("#close").on("click",function () {
-        window.location.href = getBaseUrl() +"/toProcess";
+        window.location.href = getBaseUrl() +"/view/toProcess";
     })
 
     function initSelector() {
         $.ajax({
-            url: getBaseUrl() + "/getOperatorList",
+            url: getBaseUrl() + "/data/getOperatorList",
             dataType: "json",
             async: false,
             success: function (data) {

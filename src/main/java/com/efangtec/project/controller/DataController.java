@@ -1,13 +1,12 @@
 package com.efangtec.project.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.efangtec.project.entity.BaseParam;
-import com.efangtec.project.entity.BsActorTask;
-import com.efangtec.project.entity.One;
-import com.efangtec.project.entity.Two;
+import com.efangtec.project.entity.*;
 import com.efangtec.workflow.engine.DBAccess;
 import com.efangtec.workflow.engine.access.QueryFilter;
+import com.efangtec.workflow.engine.entity.HistoryTask;
 import com.efangtec.workflow.engine.entity.Process;
 import com.efangtec.workflow.engine.entity.Task;
 import com.efangtec.workflow.engine.model.ProcessModel;
@@ -26,52 +25,14 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping(value = "/business")
-public class BusinessController {
+@RequestMapping(value = "/data")
+public class DataController {
     @Autowired
     DBAccess access;
     @Autowired
     private SnakerEngineFacets facets;
     @Autowired
     SqlSessionTemplate sqlSessionTemplate;
-
-    @RequestMapping(value = "/detail")
-    public JSONObject getbusinessDate(String taskId) {
-        JSONObject result = new JSONObject();
-        Task task = access.queryObject(Task.class, "select * from wf_task where id=?", new Object[]{taskId});
-        One one = access.queryObject(One.class, "select * from ap_one where order_id=?", task.getOrderId());
-        String variable = task.getVariable();
-        JSONObject jsonObject = JSON.parseObject(variable);
-        jsonObject.put("name", one.getName());
-        System.out.println(task);
-        return jsonObject;
-    }
-
-    @RequestMapping(value = "/opt")
-    @ResponseBody
-    public JSONObject doSth(String name, String opt, String expr, String taskId, String operator, String processId, String orderId) {
-        JSONObject jsonObject = new JSONObject();
-        Map<String, Object> params = new HashMap<>();
-        if (StringUtils.isNotEmpty(expr)) {
-            params.put(expr, opt);
-            params.put("name", name);
-        }
-        facets.execute(taskId, operator, params);
-        Task task = access.queryObject(Task.class, "select * from wf_task where order_id=? limit 1", new Object[]{orderId});
-        if (ObjectUtils.isEmpty(task)) {
-            jsonObject.put("code", 100);
-        } else {
-            jsonObject.put("code", 200);
-            jsonObject.put("id", task.getId());
-        }
-        Map<String, Object> p = new HashMap<>();
-        p.put("orderId", orderId);
-        p.put("taskId", taskId);
-        p.put("name", "name");
-        p.put("msg", null);
-        sqlSessionTemplate.insert("ApplyMapper.insertTwo", p);
-        return jsonObject;
-    }
 
     /**
      * 执行一步
@@ -171,6 +132,73 @@ public class BusinessController {
             }
             sqlSessionTemplate.insert("ApplyMapper.insertActorTaskBatch", bsActorTasks);
         }
+        return jsonObject;
+    }
+
+    /**
+     * 获取表格数据，回显之前节点的信息
+     * @param orderId
+     * @return
+     */
+    @RequestMapping(value = "/getFormData")
+    @ResponseBody
+    public JSONObject getFormData(String orderId) {
+        JSONObject jsonObject = new JSONObject();
+        JSONArray jsonArray = new JSONArray();
+//        List<HistoryTask> historyTasks = facets.getEngine().query().getHistoryTasks(new QueryFilter().setOrderId(orderId));
+        //这个查询用来按照tackName进行了分组，主要是解决会签时同一步可能有多个task，暂定200，原则上不会有这个多节点
+        List<HistoryTask> historyTasks = access.queryList(HistoryTask.class,"SELECT * from (SELECT * FROM `wf_hist_task` where order_Id =?  ORDER BY id desc  LIMIT 200 ) as b GROUP BY task_Name",new Object[]{orderId});
+        //当前任务，如果有多个则可能是会签任务
+        List<Task> tasks = access.queryList(Task.class, "select * from wf_task where order_Id =?", new Object[]{orderId});
+
+        for (HistoryTask historyTask:historyTasks) {
+            JSONObject jo = new JSONObject();
+            jo.put("name",historyTask.getTaskName());
+            jo.put("id",historyTask.getId());
+            jo.put("orderId",orderId);
+            Two two = access.queryObject(Two.class, "select * from ap_two where task_id = ?", new Object[]{historyTask.getId()});
+            jo.put("formData",two);
+            jo.put("tasks",tasks.toString());
+            jo.put("taskSize",tasks.size());
+            jsonArray.add(jo);
+        }
+        jsonObject.put("data",jsonArray);
+        return jsonObject;
+    }
+
+    /**
+     * 获取会签全部参与人列表
+     * @return
+     */
+    @RequestMapping("/getOperatorList")
+    @ResponseBody
+    public JSONObject getOperatorList(){
+        JSONObject jsonObject = new JSONObject();
+        List<BsActor> bsActors = access.queryList(BsActor.class, "select * from bs_actor", new Object[]{});
+        jsonObject.put("list",bsActors);
+        return jsonObject;
+    }
+
+    /**
+     * 获取会签待参与人列表
+     * @param orderId
+     * @return
+     */
+    @RequestMapping("/getOperatorListDoing")
+    @ResponseBody
+    public JSONObject getOperatorListDoing(String orderId){
+        JSONObject jsonObject = new JSONObject();
+        List<BsActor> result = new ArrayList<>();
+        List<BsActor> bsActors = access.queryList(BsActor.class, "select * from bs_actor", new Object[]{});
+        List<BsActorTask> bsActorTasks = access.queryList(BsActorTask.class, "select * from bs_actor_task where order_id=?", new Object[]{orderId});
+        for (int i = 0; i < bsActorTasks.size(); i++) {
+            for (int j = 0; j < bsActors.size(); j++) {
+                if(bsActors.get(j).getId() == bsActorTasks.get(i).getActorId()){
+                    result.add(bsActors.get(j));
+                }
+            }
+        }
+        jsonObject.put("list",result);
         return jsonObject;
     }
 

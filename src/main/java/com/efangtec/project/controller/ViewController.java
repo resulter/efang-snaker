@@ -1,4 +1,4 @@
-package com.efangtec.project;
+package com.efangtec.project.controller;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -33,7 +33,8 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
-public class TestController {
+@RequestMapping(value = "/view")
+public class ViewController {
     @Autowired
     private SnakerEngineFacets facets;
     @Autowired
@@ -83,7 +84,7 @@ public class TestController {
         //查询第二个节点的参与者，主要作用是 当第二个节点为会签任务时添加会签变量
         String s = models.size()>2&&StringUtils.isNotEmpty(models.get(1).getAssignee())?models.get(1).getAssignee():"";
         applyService.startProcess(processId, operator, param.build(),s);
-        return "redirect:/toProcess";
+        return "redirect:/view/toProcess";
     }
 
     /**
@@ -167,42 +168,8 @@ public class TestController {
         return mv;
     }
 
-    @RequestMapping(value = "/excute")
-    @ResponseBody
-    public void excuteTask(String taskId) {
-        facets.execute(taskId, "testOperator", null);
-    }
 
-    /**
-     * 获取表格数据，回显之前节点的信息
-     * @param orderId
-     * @return
-     */
-    @RequestMapping(value = "/getFormData")
-    @ResponseBody
-    public JSONObject getFormData(String orderId) {
-        JSONObject jsonObject = new JSONObject();
-        JSONArray jsonArray = new JSONArray();
-//        List<HistoryTask> historyTasks = facets.getEngine().query().getHistoryTasks(new QueryFilter().setOrderId(orderId));
-        //这个查询用来按照tackName进行了分组，主要是解决会签时同一步可能有多个task，暂定200，原则上不会有这个多节点
-        List<HistoryTask> historyTasks = access.queryList(HistoryTask.class,"SELECT * from (SELECT * FROM `wf_hist_task` where order_Id =?  ORDER BY id desc  LIMIT 200 ) as b GROUP BY task_Name",new Object[]{orderId});
-        //当前任务，如果有多个则可能是会签任务
-        List<Task> tasks = access.queryList(Task.class, "select * from wf_task where order_Id =?", new Object[]{orderId});
 
-        for (HistoryTask historyTask:historyTasks) {
-            JSONObject jo = new JSONObject();
-            jo.put("name",historyTask.getTaskName());
-            jo.put("id",historyTask.getId());
-            jo.put("orderId",orderId);
-            Two two = access.queryObject(Two.class, "select * from ap_two where task_id = ?", new Object[]{historyTask.getId()});
-            jo.put("formData",two);
-            jo.put("tasks",tasks.toString());
-            jo.put("taskSize",tasks.size());
-            jsonArray.add(jo);
-        }
-        jsonObject.put("data",jsonArray);
-        return jsonObject;
-    }
 
     /**
      * 跳转到启动流程页面
@@ -217,39 +184,5 @@ public class TestController {
         return mv;
     }
 
-    /**
-     * 获取会签全部参与人列表
-     * @return
-     */
-    @RequestMapping("/getOperatorList")
-    @ResponseBody
-    public JSONObject getOperatorList(){
-        JSONObject jsonObject = new JSONObject();
-        List<BsActor> bsActors = access.queryList(BsActor.class, "select * from bs_actor", new Object[]{});
-        jsonObject.put("list",bsActors);
-        return jsonObject;
-    }
 
-    /**
-     * 获取会签待参与人列表
-     * @param orderId
-     * @return
-     */
-    @RequestMapping("/getOperatorListDoing")
-    @ResponseBody
-    public JSONObject getOperatorListDoing(String orderId){
-        JSONObject jsonObject = new JSONObject();
-        List<BsActor> result = new ArrayList<>();
-        List<BsActor> bsActors = access.queryList(BsActor.class, "select * from bs_actor", new Object[]{});
-        List<BsActorTask> bsActorTasks = access.queryList(BsActorTask.class, "select * from bs_actor_task where order_id=?", new Object[]{orderId});
-        for (int i = 0; i < bsActorTasks.size(); i++) {
-            for (int j = 0; j < bsActors.size(); j++) {
-                if(bsActors.get(j).getId() == bsActorTasks.get(i).getActorId()){
-                    result.add(bsActors.get(j));
-                }
-            }
-        }
-        jsonObject.put("list",result);
-        return jsonObject;
-    }
 }

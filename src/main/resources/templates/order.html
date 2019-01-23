@@ -89,7 +89,7 @@
        var processId =  $("#startConfirm").attr("processId");
        var name = $("#name").val();
        alert(processId + "   :  "+ name);
-        jQuery.ax(getBaseUrl() + "/startProcess", {
+        jQuery.ax(getBaseUrl() + "/view/startProcess", {
             processId: processId,
             name: name,
             operator: "operator"
