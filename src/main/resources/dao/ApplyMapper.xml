@@ -34,7 +34,7 @@
         </foreach>
     </insert>
 
-    <delete id="deleteActorTaskByTaskId">
-	  delete  from  bs_actor_task   where   task_id = #{taskId}
+    <delete id="deleteActorTaskByOrderIdAndSelect">
+	  delete  from  bs_actor_task   where   order_id = #{orderId} and actor_id =#{select}
    </delete>
 </mapper>

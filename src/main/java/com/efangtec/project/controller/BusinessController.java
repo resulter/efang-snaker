@@ -145,7 +145,11 @@ public class BusinessController {
         JSONObject jsonObject = new JSONObject();
 
         List<Task> tasks = facets.execute(taskId, operator, params);
-        sqlSessionTemplate.delete("ApplyMapper.deleteActorTaskByTaskId", taskId);
+        //根据选择的操作人和orderId删除这个任务，该表的作用是获取会签待办人列表
+        Map<String,String> deleteParam = new HashMap<>();
+        deleteParam.put("orderId",orderId);
+        deleteParam.put("select",select);
+        sqlSessionTemplate.delete("ApplyMapper.deleteActorTaskByOrderIdAndSelect", deleteParam);
         Task task = access.queryObject(Task.class, "select * from wf_task where order_id=? limit 1", new Object[]{orderId});
         if (ObjectUtils.isEmpty(task)) {
             jsonObject.put("code", 100);
