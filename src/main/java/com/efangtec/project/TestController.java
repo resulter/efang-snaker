@@ -49,6 +49,13 @@ public class TestController {
         return mv;
     }
 
+    /**
+     * 跳转到流程列表页面
+     * @param mv
+     * @param s
+     * @param page
+     * @return
+     */
     @RequestMapping(value = "/toProcess")
     public ModelAndView toProcess(ModelAndView mv, String s, Page<Process> page) {
         mv.setViewName("/process");
@@ -79,6 +86,13 @@ public class TestController {
         return "redirect:/toProcess";
     }
 
+    /**
+     * 实例列表
+     * @param mv
+     * @param s
+     * @param page
+     * @return
+     */
     @RequestMapping(value = "/toOrder")
     public ModelAndView toOrder(ModelAndView mv, String s, Page<HistoryOrder> page) {
         mv.setViewName("/order");
@@ -90,6 +104,12 @@ public class TestController {
         return mv;
     }
 
+    /**
+     * 待办列表
+     * @param mv
+     * @param page
+     * @return
+     */
     @RequestMapping(value = "toActive")
     public ModelAndView homeTaskList(ModelAndView mv, Page<WorkItem> page) {
         mv.setViewName("/active");
@@ -103,6 +123,13 @@ public class TestController {
         return mv;
     }
 
+    /**
+     * 查看流程图
+     * @param mv
+     * @param processId
+     * @param orderId
+     * @return
+     */
     @RequestMapping(value = "toActiveDetail", method = RequestMethod.GET)
     public ModelAndView toActiveDetail(ModelAndView mv, String processId, String orderId) {
         mv.setViewName("/active-detail");
@@ -115,6 +142,14 @@ public class TestController {
         return mv;
     }
 
+    /**
+     *跳转到实例详情页面，操作是在这个页面
+     * @param mv
+     * @param processId
+     * @param orderId
+     * @param taskId
+     * @return
+     */
     @RequestMapping(value = "toOrderDetail", method = RequestMethod.GET)
     public ModelAndView toOrderDetail(ModelAndView mv, String processId, String orderId, String taskId) {
         mv.setViewName("/order-detail");
@@ -138,6 +173,11 @@ public class TestController {
         facets.execute(taskId, "testOperator", null);
     }
 
+    /**
+     * 获取表格数据，回显之前节点的信息
+     * @param orderId
+     * @return
+     */
     @RequestMapping(value = "/getFormData")
     @ResponseBody
     public JSONObject getFormData(String orderId) {
@@ -163,6 +203,13 @@ public class TestController {
         jsonObject.put("data",jsonArray);
         return jsonObject;
     }
+
+    /**
+     * 跳转到启动流程页面
+     * @param mv
+     * @param processId
+     * @return
+     */
     @RequestMapping(value = "toStartView", method = RequestMethod.GET)
     public ModelAndView toStartView(ModelAndView mv, String processId) {
         mv.setViewName("/start");
@@ -170,7 +217,10 @@ public class TestController {
         return mv;
     }
 
-
+    /**
+     * 获取会签全部参与人列表
+     * @return
+     */
     @RequestMapping("/getOperatorList")
     @ResponseBody
     public JSONObject getOperatorList(){
@@ -179,6 +229,12 @@ public class TestController {
         jsonObject.put("list",bsActors);
         return jsonObject;
     }
+
+    /**
+     * 获取会签待参与人列表
+     * @param orderId
+     * @return
+     */
     @RequestMapping("/getOperatorListDoing")
     @ResponseBody
     public JSONObject getOperatorListDoing(String orderId){

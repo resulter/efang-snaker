@@ -79,7 +79,7 @@ public class BusinessController {
      * @param param
      * @return
      */
-    @RequestMapping(value = "/receiveTest", method = {RequestMethod.POST, RequestMethod.GET})
+    @RequestMapping(value = "/executeOneStep", method = {RequestMethod.POST, RequestMethod.GET})
     @ResponseBody
     @Transactional
     public JSONObject receiveTest(@RequestBody BaseParam param) {
