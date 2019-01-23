@@ -69,10 +69,10 @@ public abstract class AbstractDBAccess implements DBAccess {
 	protected static final String CCORDER_UPDATE = "update wf_cc_order set status = ?, finish_Time = ? where order_Id = ? and actor_Id = ?";
 	protected static final String CCORDER_DELETE = "delete from wf_cc_order where order_Id = ? and actor_Id = ?";
 	
-	protected static final String TASK_INSERT = "insert into wf_task (id,order_Id,task_Name,display_Name,task_Type,perform_Type,operator,create_Time,finish_Time,expire_Time,action_Url,parent_Task_Id,variable,version) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+	protected static final String TASK_INSERT = "insert into wf_task (id,order_Id,task_Name,display_Name,task_Type,perform_Type,operator,create_Time,finish_Time,expire_Time,action_Url,parent_Task_Id,variable,version,assignee) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 	protected static final String TASK_UPDATE = "update wf_task set finish_Time=?, operator=?, variable=?, expire_Time=?, action_Url=?, version = version + 1 where id=? and version = ?";
 	protected static final String TASK_DELETE = "delete from wf_task where id = ?";
-	protected static final String TASK_HISTORY_INSERT = "insert into wf_hist_task (id,order_Id,task_Name,display_Name,task_Type,perform_Type,task_State,operator,create_Time,finish_Time,expire_Time,action_Url,parent_Task_Id,variable) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+	protected static final String TASK_HISTORY_INSERT = "insert into wf_hist_task (id,order_Id,task_Name,display_Name,task_Type,perform_Type,task_State,operator,create_Time,finish_Time,expire_Time,action_Url,parent_Task_Id,variable,assignee) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 	protected static final String TASK_HISTORY_DELETE = "delete from wf_hist_task where id = ?";
 	
 	protected static final String TASK_ACTOR_INSERT = "insert into wf_task_actor (task_Id, actor_Id,creator) values (?, ?, ?)";
@@ -218,10 +218,10 @@ public abstract class AbstractDBAccess implements DBAccess {
 		} else {
 			Object[] args = new Object[]{task.getId(), task.getOrderId(), task.getTaskName(), task.getDisplayName(), task.getTaskType(), 
 					task.getPerformType(), task.getOperator(), task.getCreateTime(), task.getFinishTime(), 
-					task.getExpireTime(), task.getActionUrl(), task.getParentTaskId(), task.getVariable(), task.getVersion()};
+					task.getExpireTime(), task.getActionUrl(), task.getParentTaskId(), task.getVariable(), task.getVersion(),task.getAssignee()};
 			int[] type = new int[]{Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.INTEGER, 
 					Types.INTEGER, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR,
-					Types.VARCHAR, Types.VARCHAR, Types.INTEGER};
+					Types.VARCHAR, Types.VARCHAR, Types.INTEGER,Types.VARCHAR};
 			saveOrUpdate(buildMap(TASK_INSERT, args, type));
 		}
 	}
@@ -365,9 +365,9 @@ public abstract class AbstractDBAccess implements DBAccess {
 		} else {
 			Object[] args = new Object[]{task.getId(), task.getOrderId(), task.getTaskName(), task.getDisplayName(), task.getTaskType(), 
 					task.getPerformType(), task.getTaskState(), task.getOperator(), task.getCreateTime(), task.getFinishTime(), 
-					task.getExpireTime(), task.getActionUrl(), task.getParentTaskId(), task.getVariable()};
+					task.getExpireTime(), task.getActionUrl(), task.getParentTaskId(), task.getVariable(),task.getAssignee()};
 			int[] type = new int[]{Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.INTEGER, 
-					Types.INTEGER, Types.INTEGER, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR};
+					Types.INTEGER, Types.INTEGER, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR,Types.VARCHAR};
 			saveOrUpdate(buildMap(TASK_HISTORY_INSERT, args, type));
             if(task.getActorIds() != null) {
                 for(String actorId : task.getActorIds()) {
@@ -1008,7 +1008,7 @@ public abstract class AbstractDBAccess implements DBAccess {
         if(page == null) {
             return queryList(clazz, querySQL, args);
         }
-        String countSQL = "select count(1) from (" + sql + ") c ";
+        String countSQL = "select Count(1) from (" + sql + ") c ";
         querySQL = getDialect().getPageSql(querySQL, page);
         if(log.isDebugEnabled()) {
             log.debug("查询分页countSQL=\n" + countSQL);

@@ -106,8 +106,17 @@ public class Task implements Serializable, Cloneable {
      * 保持模型对象
      */
     private TaskModel model;
-    
-    public Task() {
+	String   assignee;
+
+	public String getAssignee() {
+		return assignee;
+	}
+
+	public void setAssignee(String assignee) {
+		this.assignee = assignee;
+	}
+
+	public Task() {
     	
     }
     

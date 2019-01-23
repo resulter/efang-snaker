@@ -28,6 +28,8 @@ import java.util.Map;
  */
 public class HistoryTask implements Serializable {
 
+	private String  assignee;
+
 	/**
 	 * 
 	 */
@@ -127,8 +129,16 @@ public class HistoryTask implements Serializable {
     	this.variable = task.getVariable();
     	this.performType = task.getPerformType();
     }
-    
-    /**
+
+	public String getAssignee() {
+		return assignee;
+	}
+
+	public void setAssignee(String assignee) {
+		this.assignee = assignee;
+	}
+
+	/**
      * 根据历史任务产生撤回的任务对象
      * @return 任务对象
      */
